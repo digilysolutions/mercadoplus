@@ -28,7 +28,7 @@
             </button>
             <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
               <div class="navbar-nav mr-auto py-0">
-                <a href="index.html" class="nav-item nav-link active">Ofertas del Día</a>
+                <a href="index.html" class="nav-item nav-link active">Oferta del Día</a>
                 <a href="shop.html" class="nav-item nav-link">Servicio al Cliente</a>
                 <a href="shop.html" class="nav-item nav-link"> Tienda</a>
 
