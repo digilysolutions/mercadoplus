@@ -37,6 +37,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+// Rutas que necesitan autenticación y roles específicos
+Route::middleware(['auth'])->group(function () {
+  //  Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:view reports');
+});
+
+// Rutas de administrador
+Route::middleware(['auth', 'role:admin'])->group(function () {
+   //Units
+Route::get('/admin/units', [UnitController::class, 'index'])->name('units.index');
+Route::post('/admin/units', [UnitController::class, 'store'])->name('units.store');
+Route::get('/admin/units/{id}', [UnitController::class,  'show']);
+Route::delete('/admin/units/{id}', [UnitController::class, 'delete']);
+Route::put('/admin/units/{id}', [UnitController::class, 'update'])->name('units.update');
+});
+
+
+
 Route::get('/', [homeController::class,  'index']);
 Route::get('/exchangerate/{currency}', [homeController::class,  'productsExchangeRates'])->name('products.exchangerate');
 Route::post('/products/exchangeRateProduct', [homeController::class,  'exchangeRateProduct'])->name('product.exchangeRateProduct');
@@ -81,12 +99,7 @@ Route::get('/admin/unitbase/{id}', [UnitBaseController::class,  'show']);
 Route::delete('/admin/unitbase/{id}', [UnitBaseController::class, 'delete']);
 Route::put('/admin/unitbase/{id}', [UnitBaseController::class, 'update'])->name('unitsbase.update');
 
-//Units
-Route::get('/admin/units', [UnitController::class, 'index'])->name('units.index');
-Route::post('/admin/units', [UnitController::class, 'store'])->name('units.store');
-Route::get('/admin/units/{id}', [UnitController::class,  'show']);
-Route::delete('/admin/units/{id}', [UnitController::class, 'delete']);
-Route::put('/admin/units/{id}', [UnitController::class, 'update'])->name('units.update');
+
 
 //Countries
 Route::get('/admin/countries', [CountryController::class, 'index'])->name('countries.index');

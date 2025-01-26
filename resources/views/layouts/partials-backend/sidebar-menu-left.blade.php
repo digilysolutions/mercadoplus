@@ -91,11 +91,14 @@
                                 <i class="las la-minus"></i><span>Modelos</span>
                             </a>
                         </li>
+
+                        @if( auth()->check() &&  auth()->user()->hasRole('admin'))  
                         <li class="{{ request()->is('admin/units*') ? 'active' : '' }}">
                             <a href="{{ route('units.index') }}" class="submenu-link">
                                 <i class="las la-minus"></i><span>Unidades</span>
                             </a>
                         </li>
+                        @endif
                         <li class="{{ request()->is('admin/unitsbase*') ? 'active' : '' }}">
                             <a href="{{ route('unitsbase.index') }}">
                                 <i class="las la-minus"></i><span>Unidades Base</span>
