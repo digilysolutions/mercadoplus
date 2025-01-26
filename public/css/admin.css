@@ -1,0 +1,5 @@
+@media only screen and (max-width: 767px) { /* Para dispositivos móviles */
+    .autor-column, .product-business-column, .date-column {
+        display: none; /* Ocultar otras columnas */
+    }
+}
