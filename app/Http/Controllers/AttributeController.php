@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 
 
-use App\Services\attributeServices;
+use App\Services\AttributeServices;
 use Attribute;
 use Illuminate\Http\Request;
 
