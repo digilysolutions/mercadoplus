@@ -11,9 +11,9 @@
 
               @foreach ( $menuCategories as $category)
               <a href="{{ url('/products-categories/' . $category['id']) }}" class="nav-item nav-link">{{ $category['name'] }}</a>
-              @endforeach  
-             
-             
+              @endforeach
+
+
             </div>
           </nav>
         </div>
@@ -30,18 +30,18 @@
               <div class="navbar-nav mr-auto py-0">
                 <a href="index.html" class="nav-item nav-link active">Ofertas del Día</a>
                 <a href="shop.html" class="nav-item nav-link">Servicio al Cliente</a>
-                <a href="shop.html" class="nav-item nav-link">Tiendas</a>
+                <a href="shop.html" class="nav-item nav-link">Tienda</a>
 
                 <a href="contact.html" class="nav-item nav-link">Contacto</a>
               </div>
-             
+
               <div class="top-cart-block">
                 <div class="top-cart-info" id="cart-info">
                     <a href="javascript:void(0);" class="text-secundary top-cart-info-count" id="item-count">0 productos</a>
                     <a href="javascript:void(0);" class="top-cart-info-value" id="total-price">$0.00</a>
                 </div>
                 <i class="fa fa-shopping-cart mt-3"></i>
-                
+
                 <div class="top-cart-content-wrapper" id="cart-content" style="display: none;">
                   <div class="top-cart-content">
                       <div class="slimScrollDiv" style="position: relative; overflow: hidden; height: 100%;">
