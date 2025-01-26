@@ -30,7 +30,7 @@
               <div class="navbar-nav mr-auto py-0">
                 <a href="index.html" class="nav-item nav-link active">Ofertas del Día</a>
                 <a href="shop.html" class="nav-item nav-link">Servicio al Cliente</a>
-                <a href="shop.html" class="nav-item nav-link">Tienda</a>
+                <a href="shop.html" class="nav-item nav-link"> Tienda</a>
 
                 <a href="contact.html" class="nav-item nav-link">Contacto</a>
               </div>
