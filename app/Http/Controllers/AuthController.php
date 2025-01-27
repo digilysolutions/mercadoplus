@@ -26,7 +26,7 @@ class AuthController extends Controller
         ]);
 
         // Intentar autenticarse
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $request->remember)) {
             // Redirigir al usuario a la ruta deseada
             return redirect()->intended('dashboard');
         }
