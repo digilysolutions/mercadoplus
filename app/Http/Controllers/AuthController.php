@@ -15,6 +15,13 @@ class AuthController extends Controller
     {
         return view('app.login');
     }
+    public function dashboard()
+    {
+        return view('app.dashboard');
+    }
+
+
+
 
     // Iniciar sesión
     public function login(Request $request)
@@ -27,8 +34,8 @@ class AuthController extends Controller
 
         // Intentar autenticarse
         if (Auth::attempt($credentials, $request->remember)) {
-            // Redirigir al usuario a la ruta deseada
-            return redirect()->intended('dashboard');
+                      // Redirigir al usuario a la ruta deseada
+                      return view('app.dashboard');
         }
 
         // Si la autenticación falla

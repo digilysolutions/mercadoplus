@@ -34,7 +34,9 @@
                                  <p>Inicia sesión para mantenerte conectado.
 
                                  </p>
-                                 <form>
+                                 <form method="POST" action="{{ route('login') }}">
+                                    @csrf
+
                                     <div class="row">
                                        <div class="col-lg-12">
                                           <div class="floating-label form-group">
