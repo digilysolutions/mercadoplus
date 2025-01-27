@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttributeController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CartController;
@@ -36,6 +37,13 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
 
 
 // Rutas que necesitan autenticación y roles específicos
@@ -183,7 +191,7 @@ Route::delete('/admin/attributes/{id}', [AttributeController::class, 'delete']);
 Route::put('/admin/attributes/{id}', [AttributeController::class, 'update'])->name('attribute.update');
 
 
-//terminos 
+//terminos
 Route::get('/admin/terms', [TermsController::class, 'index'])->name('terms.index');
 Route::post('/admin/terms', [TermsController::class, 'store'])->name('term.store');
 Route::get('/admin/terms/{id}', [TermsController::class,  'show']);
