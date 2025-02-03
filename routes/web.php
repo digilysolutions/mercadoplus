@@ -46,6 +46,8 @@ Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::get('/admin/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+Route::get('login/google', [GoogleController::class, 'redirectToGoogle'])->name('login.google');
+Route::get('auth/google-callback', [GoogleController::class, 'handleGoogleCallback']);
 
 
 

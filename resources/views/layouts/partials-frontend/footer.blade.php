@@ -23,7 +23,6 @@
                 <div class="col-md-4 mb-5">
                     <h5 class="text-secondary text-uppercase mb-4">Categorías</h5>
                     <div class="d-flex flex-column justify-content-start" id="categoryListFooterContainer">
-
                     </div>
                 </div>
                 <div class="col-md-4 mb-5">
@@ -36,7 +35,6 @@
                         <a class="text-secondary mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Tienda</a>
                         <a class="text-secondary mb-2" href="contact.html"><i
                                 class="fa fa-angle-right mr-2"></i>Contacto</a>
-
                     </div>
                 </div>
                 <div class="col-md-4 mb-5">
@@ -68,7 +66,6 @@
                 <a class="text-primary" href="https://digilysolutions.com">LY Digi-Solutions</a>
             </p>
         </div>
-
     </div>
 </div>
 <!-- Back to Top -->
@@ -88,14 +85,11 @@
 <script src="{{ asset('js/main.js') }}"></script>
 <script src="{{ asset('js/app.js') }}"></script>
 
-
 <script type="module" src="{{ asset('includes/api.js') }}"></script>
 <script type="module" src="{{ asset('includes/main.js') }}"></script>
 <script src="{{ asset('includes/app/cart.js') }}"></script>
 <script>
     $(document).ready(function() {
-
-
         $.ajax({
             url: '/cart/productExchangeRate', // Cambia esta URL según corresponda a tu caso
             method: 'GET',
@@ -106,12 +100,9 @@
                 console.error('Error al obtener el carrito:', err);
             } // Asegúrate de que esta llave tenga una coma antes, esta es la corrección
         });
-
         const cartContent = $('.top-cart-content');
-
         // Asegurarse de que el carrito no se muestre al abrir la página
         cartContent.hide(); // Asegura que el carrito esté oculto al cargar la página.
-
 
         // Muestra el carrito al pasar el cursor
         $('#cart-info, .fa-shopping-cart, .top-cart-content, .top-cart-block').hover(function(e) {
@@ -132,7 +123,7 @@
                 } else {
                     cartContent.show(); // Si no, mostrarlo
                     // Actualiza el carrito al mostrar
-                    cartContent.stop(true, true).fadeIn(100); // Mostrar el contenido del carrito 
+                    cartContent.stop(true, true).fadeIn(100); // Mostrar el contenido del carrito
                 }
             }
         });
@@ -147,14 +138,11 @@
         $(document).on('click', '.addcart', function() {
             console.log("sss");
             const productId = $(this).data('id');
-            
             addProductCart(productId, 1);
-
         });
-       
+
         $(document).on('click', '.increase-quantity', function() {
             const id = $(this).data('id');
-            alert('1');
             addCartItems(id);
         });
 
