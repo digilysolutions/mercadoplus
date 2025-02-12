@@ -209,50 +209,52 @@
 
 @section('js')
     <script src="{{ asset('js/main.js') }}"></script>
-    <script src="{{ asset('js/cart.js') }}"></script>
+
     <script>
-        function updateorder() {
-console.log('entre');
+        var checkout =true;
+        function updateOrder() {
+    console.log('entre');
 
-            $.ajax({
-                url: '/cart/infoCart', // Asegúrate de que esta ruta retorne un JSON  
-                method: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(data) {
-                   
-                    $('#currency-checkout').text(data.currency);
-                    var subtotal_checkout = 0;
-                    $.each(data.products, function(index, item) {
-                        var price_product_incheckout = item.sale_price;
-                        var quantity_product_incheckout = item.quantity;
-                        var subtotal_product_incheckout = price_product_incheckout *
-                            quantity_product_incheckout;
-                            subtotal_checkout +=subtotal_product_incheckout;
-                        $('#product-checkout-' + item.id).text('$' + subtotal_product_incheckout.toFixed(2));
-                        $('#product-quantity-' + item.id).text(quantity_product_incheckout);
-                        console.log(quantity_product_incheckout);
+    $.ajax({
+        url: '/cart/infoCart',
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(data) {
+            $('#currency-checkout').text(data.currency);
+            var subtotal_checkout = 0;
 
+            if (data.products.length === 0) {
+                // Redirección solo si no hay productos
+                window.location.href = '/';
+                return;
+            }
 
-                        /* $('.sale-price-' + item.id).text('$' + sale_price);
-                         $('.total-price-row-' + item.id).text('$' + subtotal_price);*/
-                    });
-                    var totalValue =  subtotal_checkout +   parseFloat($('#deliveryValue').text().replace(/[$,]/g, '').trim());
-                    $('#subtotalValue').text('$' + subtotal_checkout.toFixed(2));
-                    $('#totalValue').text('$' + totalValue.toFixed(2)); 
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error al actualizar el carrito:', textStatus, errorThrown);
-                }
+            $.each(data.products, function(index, item) {
+                var subtotal_product_incheckout = item.sale_price * item.quantity;
+                subtotal_checkout += subtotal_product_incheckout;
+
+                $('#product-checkout-' + item.id).text('$' + subtotal_product_incheckout.toFixed(2));
+                $('#product-quantity-' + item.id).text(item.quantity);
             });
+
+            var totalValue = subtotal_checkout + parseFloat($('#deliveryValue').text().replace(/[$,]/g, '').trim());
+            $('#subtotalValue').text('$' + subtotal_checkout.toFixed(2));
+            $('#totalValue').text('$' + totalValue.toFixed(2));
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Error al actualizar el carrito:', textStatus, errorThrown);
+            alert('Error al actualizar el carrito. Por favor, inténtalo de nuevo.'); // Mensaje de error
         }
+    });
+}
 
         $(document).ready(function() {
-            // Establecer el estado inicial de la sección de entrega  
+            // Establecer el estado inicial de la sección de entrega
             toggleDeliveryFields();
 
-            // Función para mostrar u ocultar la sección de entrega  
+            // Función para mostrar u ocultar la sección de entrega
             $('#is-deliveryZone').change(function() {
                 toggleDeliveryFields();
             });
@@ -261,7 +263,7 @@ console.log('entre');
                 const deliverySection = $('#deliverySection');
 
 
-                // Mostrar o ocultar la sección de entrega según el estado del checkbox  
+                // Mostrar o ocultar la sección de entrega según el estado del checkbox
                 if ($('#is-deliveryZone').is(':checked')) {
                     deliverySection.show();
                     var deliveryPrice = parseFloat($('#deliverySelect').find('option:selected').data('price'));
@@ -288,7 +290,7 @@ console.log('entre');
             // Obtener el precio de entrega de la opción seleccionada
             var deliveryPrice = parseFloat($(this).find('option:selected').data('price'));
             calcTotal(deliveryPrice);
-           
+
 
         });
 
@@ -299,26 +301,26 @@ console.log('entre');
 Número de Orden: *m525pl7w33*
 
 📝 *Detalle del Pedido:*
-Cantidad | Producto                     | Precio  
-1        | Shein Bikini Azul            | $150    
-1        | Lavadora Semiautomática      | $150    
-1        | Premier Sandwichera          | $150    
-1        | Shein Bikini                 | $150    
-1        | Televisor Full HD 43"        | $150    
+Cantidad | Producto                     | Precio
+1        | Shein Bikini Azul            | $150
+1        | Lavadora Semiautomática      | $150
+1        | Premier Sandwichera          | $150
+1        | Shein Bikini                 | $150
+1        | Televisor Full HD 43"        | $150
 
 💰 *Resumen de la Orden:*
-Subtotal: $750  
-Descuento: -$5  
-Domicilio: $10  
-Total: $755  
+Subtotal: $750
+Descuento: -$5
+Domicilio: $10
+Total: $755
 
 📦 *Información del Pedido:*
 Nombre del Comprador: Yasniel Reyes
-Nombre del Receptor: Yasniel Reyes 
+Nombre del Receptor: Yasniel Reyes
 
 📞 *Contacto:*
 [Logo de la Empresa]
-Puedes ver el detalle de tu pedido en el siguiente enlace: 
+Puedes ver el detalle de tu pedido en el siguiente enlace:
 https://mercadoplus.digilysolutions.com/
         `.trim();
 
@@ -328,4 +330,7 @@ https://mercadoplus.digilysolutions.com/
             window.open(url, '_blank');
         }
     </script>
+
+<script src="{{ asset('js/cart.js') }}"></script>
+
 @endsection

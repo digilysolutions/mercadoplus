@@ -67,7 +67,7 @@ class CartController extends Controller
         return Session::get('cart');
     }
 
-    //Elimina la cantidad de productos del carrito de uno en uno y si esta en cero lo borra del carrito 
+    //Elimina la cantidad de productos del carrito de uno en uno y si esta en cero lo borra del carrito
     public function removeProduct(Request $request)
     {
         $request->validate([
@@ -139,11 +139,16 @@ class CartController extends Controller
     }
     public function infoCart()
     {
+        $products = Session::get('cart', []);
+        /*if (empty($products) || count($products)==0) {
+            return redirect('/');
+        }*/
+
         $deliveryZones = $this->deliveryZones->getDeliveryZones();
         $deliveryZones = $deliveryZones['data'];
 
         $currency = Session::get('currency');
-        $products = Session::get('cart', []);
+
 
         $countryCurrencies = $this->countryCurrencyService->getCountryCurrency();
         $countryCurrencies = $countryCurrencies['data'];

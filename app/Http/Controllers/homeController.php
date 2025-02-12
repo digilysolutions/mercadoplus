@@ -82,18 +82,18 @@ class homeController extends Controller
             'currency' => $currency
         ];
         $product = $this->productsService->exchangeRateProduct($dataProduct)[0];
-       
+
        /* $data = $this->productsService->showProduct($idProduct);
         $product = $data['data']['product'];
         $averageRating = $data['data']['averageRating'];
         $attributeTerms = $data['data']['attributeTerms'];
         $currentPrice = $data['data']['currentPrice'];*/
-    
+
         $averageRating = $product['averageRating'];
        // $attributeTerms =$product['attributeTerms'];
        // $currentPrice = $product['currentPrice'];
-        
-       
+
+
         $currency = $this->getCurrency();
         $countryCurrencies = $this->countryCurrencyService->getCountryCurrency();
         $countryCurrencies = $countryCurrencies['data'];
@@ -140,7 +140,7 @@ class homeController extends Controller
 
         $person = $this->personService->createPerson($dataPerson);
 
-        // } 
+        // }
         $dataComment['writer_id'] = $person['data']['id'];
         $dataComment['is_activated'] = true;
         $comment = $this->reviewService->createReview($dataComment);
@@ -150,6 +150,10 @@ class homeController extends Controller
     public function checkout($idDomicilio)
     {
         $cart = Session::get('cart');
+
+        if (empty($cart) || count($cart)==0) {
+            return redirect('/');
+        }
         if (is_array($cart)) {
             $deliveryZone = null;
             if ($idDomicilio != 0)
@@ -182,7 +186,7 @@ class homeController extends Controller
 
             ];
 
-            //Obtener de name y el phone la persona que realiza la oden  de la BD a ver si existe, de no existir la mando a crear y guardo el id de la persona para enviarla 
+            //Obtener de name y el phone la persona que realiza la oden  de la BD a ver si existe, de no existir la mando a crear y guardo el id de la persona para enviarla
             $detailsPerson = [
                 'first_name' => $request->name,
                 'phone' => $request->phone,

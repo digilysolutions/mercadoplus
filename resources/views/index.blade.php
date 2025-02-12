@@ -125,19 +125,19 @@
         </div>
     </div>
     <!-- Carousel End -->
-    <!-- Vendor Start -->  
+    <!-- Vendor Start -->
 
 
     <div class="container-fluid py-4">
         <div class="row px-xl-4">
             <div class="col">
-                <div class="owl-carousel vendor-carousel">                   
-                    @foreach ($randomProducts as $product)                       
+                <div class="owl-carousel vendor-carousel">
+                    @foreach ($randomProducts as $product)
                             <div class="bg-light p-4">
                                 <img src="{{  $product['outstanding_image'] }}" alt="">
-                            </div>                      
+                            </div>
                     @endforeach
-                </div>               
+                </div>
             </div>
         </div>
     </div>
@@ -587,6 +587,7 @@
     <!-- Offer End -->
 
     <!-- Products Start -->
+    @if(count($latestProducts)>0)
     <div class="container-fluid pt-5 pb-3">
         <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4">
             <span class="bg-secondary pr-3">Nuevos Productos</span>
@@ -654,6 +655,7 @@
             @endforeach
         </div>
     </div>
+    @endif
     <!-- Products End -->
 @endsection
 
