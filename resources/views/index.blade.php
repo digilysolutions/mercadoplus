@@ -280,7 +280,7 @@
             </h2>
             <div class="row px-xl-5">
                 @foreach ($latestProducts as $product)
-                    <div class="col-lg-3 col-md-6 col-sm-6 pb-1">
+                    <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
                         <div class="product-item bg-light mb-4">
                             <div class="product-image position-relative overflow-hidden">
                                 <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}" alt="" />

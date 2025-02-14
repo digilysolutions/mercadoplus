@@ -51,10 +51,10 @@ class homeController extends Controller
         $products = $products['data'];
         $randomProducts = $products;
         $latestProducts = collect($products);
-        $latestProducts = $latestProducts->sortByDesc('created_at')->take(8);
+        $latestProducts = $latestProducts->sortByDesc('created_at')->take(9);
 
         $featuredProducts = collect($products);
-        $featuredProducts = $featuredProducts->sortByDesc('views')->take(8);
+        $featuredProducts = $featuredProducts->sortByDesc('views')->take(9);
         shuffle($randomProducts);
         $countryCurrencies = $this->countryCurrencyService->getCountryCurrency();
         $countryCurrencies = $countryCurrencies['data'];
