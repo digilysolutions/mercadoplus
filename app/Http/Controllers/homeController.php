@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\CartService;
+use App\Services\CategoryService;
 use App\Services\ContactService;
 use App\Services\CountryCurrencyService;
 use App\Services\DeliveryZonesService;
@@ -26,13 +27,15 @@ class homeController extends Controller
     protected $countryCurrencyService;
     protected $deliveryZones;
     protected $filterProducts;
-    public function __construct(ReviewService $reviewService, DeliveryZonesService $deliveryZones, ContactService $contactService, PersonService  $personService, CartService  $cartService, CountryCurrencyService $countryCurrencyService, ProductService $productsService)
+    protected $categoryService;
+    public function __construct(ReviewService $reviewService, CategoryService $categoryService, DeliveryZonesService $deliveryZones, ContactService $contactService, PersonService  $personService, CartService  $cartService, CountryCurrencyService $countryCurrencyService, ProductService $productsService)
     {
         $this->cartService = $cartService;
         $this->reviewService = $reviewService;
         $this->contactService = $contactService;
         $this->productsService = $productsService;
         $this->personService = $personService;
+        $this->categoryService = $categoryService;
         $this->deliveryZones = $deliveryZones;
         $this->countryCurrencyService = $countryCurrencyService;
         if (!Session::has('currency')) {
@@ -233,7 +236,7 @@ class homeController extends Controller
             $data['home_delivery'] = isset($data['home_delivery']) && $data['home_delivery'] == 'on' ? 1 : 0;
             if ($data['home_delivery']) {
                 $deliveryZone = $this->deliveryZones->showDeliveryZone($data['deliveryzona_id'])['data'];
-                $delivery_name= $deliveryZone['location']['name'] ;
+                $delivery_name = $deliveryZone['location']['name'];
                 $delivery_fee = $deliveryZone['price'];
                 $delivery_time = $deliveryZone['delivery_time'];
                 $time_unit = $deliveryZone['time_unit'];
@@ -264,20 +267,39 @@ class homeController extends Controller
             $data['delivery_fee'] = $delivery_fee;
             $data['person_id'] = $person['data']['id'];
             $data['purchase_person_id'] = $purchasePerson['data']['id'];
-            return $this->sendWhatsapp($detailsPersonBuyer,$detailsPersonPurchase,$detailsPersonDelivery,$cart, $data['home_delivery'],
-            $delivery_name, $delivery_fee,$delivery_time, $time_unit, $subtotal_amount, $total_amount);
-
+            return $this->sendWhatsapp(
+                $detailsPersonBuyer,
+                $detailsPersonPurchase,
+                $detailsPersonDelivery,
+                $cart,
+                $data['home_delivery'],
+                $delivery_name,
+                $delivery_fee,
+                $delivery_time,
+                $time_unit,
+                $subtotal_amount,
+                $total_amount
+            );
         }
         return "No paso";
         return $this->index();
     }
-    public function   sendWhatsapp($detailsPersonBuyer,$detailsPersonPurchase,$detailsPersonDelivery,$products,$home_delivery,
-    $delivery_name, $delivery_fee,$delivery_time, $time_unit, $subtotal_amount, $total_amount)
-    {
+    public function   sendWhatsapp(
+        $detailsPersonBuyer,
+        $detailsPersonPurchase,
+        $detailsPersonDelivery,
+        $products,
+        $home_delivery,
+        $delivery_name,
+        $delivery_fee,
+        $delivery_time,
+        $time_unit,
+        $subtotal_amount,
+        $total_amount
+    ) {
         $whatsapp = 5358205054;
-        if($home_delivery)
-        {
-            $delivery="
+        if ($home_delivery) {
+            $delivery = "
              Domicilio: Si
              Zona: {$delivery_name}
              Tiempo de entrega: {$delivery_time} {$time_unit}
@@ -289,9 +311,9 @@ class homeController extends Controller
 
         📝 *Detalle del Pedido:*
         Cantidad | Producto                     | Precio
-        " . implode("\n", array_map(function($product) {
-                return "{$product['quantity']}        | {$product['name']} | \${$product['sale_price']}";
-            }, $products)) . "
+        " . implode("\n", array_map(function ($product) {
+            return "{$product['quantity']}        | {$product['name']} | \${$product['sale_price']}";
+        }, $products)) . "
 
         💰 *Resumen de la Orden:*
         Subtotal: \${$subtotal_amount}
@@ -309,15 +331,14 @@ class homeController extends Controller
         [Logo de la Empresa]
         Puedes ver el detalle de tu pedido en el siguiente enlace:
         " . URL::to('https://mercadoplus.digilysolutions.com/'); // Reemplaza con el enlace de tu detalle de pedido
-            $mensaje = trim($mensaje);
+        $mensaje = trim($mensaje);
 
-            // Codificar el mensaje
-            $mensajeEncoded = urlencode($mensaje);
-            $url = "https://wa.me/{$whatsapp}?text={$mensajeEncoded}";
+        // Codificar el mensaje
+        $mensajeEncoded = urlencode($mensaje);
+        $url = "https://wa.me/{$whatsapp}?text={$mensajeEncoded}";
 
-            // Redirigir al enlace de WhatsApp
-            return redirect($url);
-
+        // Redirigir al enlace de WhatsApp
+        return redirect($url);
     }
     public function customerservice()
     {
@@ -389,9 +410,16 @@ class homeController extends Controller
         $products = $this->productsService->getProducts();
         $this->filterProducts = collect($products['data']);
         $productsCollection = collect($products['data']);
+        $categories = $this->categoryService->getCategories();
+        $categories  =  collect($categories["data"]);
+
+        // Filtrar categorías para quedarte solo con las que tienen más de un producto
+        $categories = $categories->filter(function ($category) {
+            return count($category['products']) > 1; // Suponiendo que tienes una relación "products"
+        });
 
         // Definir la cantidad de productos por página
-        $perPage = 10; // Cambia esto al número que quieras por página
+        $perPage = 6; // Cambia esto al número que quieras por página
         // Paginación
         $currentPage = $request->input('page', 1); // Obtener el número de la página actual desde la URL
         $paginatedProducts = $productsCollection->slice(($currentPage - 1) * $perPage, $perPage)->values();
@@ -404,7 +432,7 @@ class homeController extends Controller
             $currentPage,
             ['path' => $request->url(), 'query' => $request->query()]
         );
-        return view('app.shop', compact('countryCurrencies', 'currency', 'productsPaginator'));
+        return view('app.shop', compact('countryCurrencies', 'currency', 'productsPaginator','categories'));
     }
     public function getFilteredProducts(Request $request)
     {
