@@ -178,13 +178,13 @@
 
 
             @foreach ($featuredProducts as $product)
-                <div class="col-lg-3 col-md-6 col-sm-6 pb-1">
+                <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
                     <div class="product-item bg-light mb-4">
                         <div class="product-image position-relative overflow-hidden">
                             <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}" alt="" />
                         </div>
                         <div class="text-center py-4">
-                            <a class="h3 text-decoration-none text-truncate"
+                            <a class="h4 text-decoration-none text-truncate"
                                 href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">{{ $product['name'] }}
                             </a>
                             <div class="d-flex align-items-center justify-content-center mt-2">
@@ -286,7 +286,7 @@
                                 <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}" alt="" />
                             </div>
                             <div class="text-center py-4">
-                                <a class="h3 text-decoration-none text-truncate"
+                                <a class="h4 text-decoration-none text-truncate"
                                     href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">{{ $product['name'] }}
                                 </a>
                                 <div class=" d-flex align-items-center justify-content-center mt-2">
