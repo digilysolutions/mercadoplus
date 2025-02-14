@@ -192,6 +192,10 @@ class homeController extends Controller
         $cart = Session::get('cart');
 
         if (is_array($cart)) {
+            $delivery_name = null;
+            $delivery_fee =0;
+            $delivery_time = null;
+            $time_unit = null;
             $subtotal_amount = 0;
             $total_amount = 0;
             $delivery_fee = 0;
