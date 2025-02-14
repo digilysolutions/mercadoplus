@@ -193,7 +193,7 @@ class homeController extends Controller
 
         if (is_array($cart)) {
             $delivery_name = null;
-            $delivery_fee =0;
+            $delivery_fee = 0;
             $delivery_time = null;
             $time_unit = null;
             $subtotal_amount = 0;
@@ -216,8 +216,8 @@ class homeController extends Controller
             $purchasePerson = $person;
 
             $detailsPersonPurchase = [
-                'first_name' =>$request->name_other_person,
-                'phone' =>$request->phone_other_person,
+                'first_name' => $request->name_other_person,
+                'phone' => $request->phone_other_person,
             ];
             if (!empty($request->phone_other_person) && !empty($request->name_other_person)) {
 
@@ -307,6 +307,42 @@ class homeController extends Controller
              Tiempo de entrega: {$delivery_time} {$time_unit}
             ";
         }
+
+
+        $message = "🛒 Orden de Compra\n"; // Icono de carrito y título
+        $message .= "Número de Orden: *m525pl7w33* " . "\n\n"; // Número de orden, importante para seguimiento
+        $message .= "📝 Detalle del Pedido:\n"; // Detalle del pedido
+        $message .= "Cantidad | Producto | Precio\n"; // Encabezado de la tabla
+        $message .= "-----------------------------------\n"; // Separador
+
+        foreach ($products as $product) {
+            $message .= sprintf(
+                "%8s | %-30s | $%s\n", // Formato de cada fila
+                $product['quantity'], // Cantidad
+                substr($product['name'], 0, 30), // Nombre del producto (truncate si es muy largo)
+                number_format($product['sale_price'], 2) // Precio con dos decimales
+            );
+        }
+        $message .= "\n"; // Salto de línea para separar
+
+        $message .= "💰 Resumen de la Orden:\n"; // Resumen de la orden
+        $message .= "Subtotal: $" . number_format($subtotal_amount, 2) . "\n"; // Subtotal
+        $message .= "Descuento: -$" . number_format(0, 2) . "\n"; // Descuento
+        $message .= "Domicilio: $" . number_format($delivery_fee, 2) . "\n"; // Domicilio
+        $message .= "Total: $" . number_format($total_amount, 2) . "\n\n"; // Total y salto de línea
+
+        $message .= "📦 Información del Pedido:\n"; // Información del pedido
+        $message .= "Creador de la Orden: " . $detailsPersonBuyer['first_name'] . "\n"; // Nombre del comprador
+        $message .= "Nombre del Comprador: " . $detailsPersonPurchase['first_name'] . "\n"; // Nombre del comprador
+        $message .= "Nombre del Receptor: " . $detailsPersonDelivery['first_name'] . "\n\n"; // Nombre del receptor
+
+        $message .= "📞 Contacto:\n"; // Contacto
+        $message .= "[Logo de la Empresa]\n"; // Placeholder para el logo (reemplaza con la URL de tu logo)
+        $message .= "Puedes ver el detalle de tu pedido en el siguiente enlace:\n"; // Enlace al detalle del pedido
+        $message .= "https://mercadoplus.digilysolutions.com/" . "\n"; // Enlace
+
+
+/*
         $mensaje = "
        🛒 *Orden de Compra*
         Número de Orden: *m525pl7w33*
@@ -336,8 +372,8 @@ class homeController extends Controller
         $mensaje = trim($mensaje);
 
         // Codificar el mensaje
-        $mensajeEncoded = urlencode($mensaje);
-        $url = "https://wa.me/{$whatsapp}?text={$mensajeEncoded}";
+        $mensajeEncoded = urlencode($mensaje);*/
+        $url = "https://wa.me/{$whatsapp}?text={$message}";
 
         // Redirigir al enlace de WhatsApp
         return redirect($url);
@@ -434,7 +470,7 @@ class homeController extends Controller
             $currentPage,
             ['path' => $request->url(), 'query' => $request->query()]
         );
-        return view('app.shop', compact('countryCurrencies', 'currency', 'productsPaginator','categories'));
+        return view('app.shop', compact('countryCurrencies', 'currency', 'productsPaginator', 'categories'));
     }
     public function getFilteredProducts(Request $request)
     {
