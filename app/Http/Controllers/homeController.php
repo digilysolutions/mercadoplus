@@ -309,72 +309,36 @@ class homeController extends Controller
         }
 
 
-        $message = "🛒 Orden de Compra\n"; // Icono de carrito y título
-        $message .= "Número de Orden: *m525pl7w33* " . "\n\n"; // Número de orden, importante para seguimiento
-        $message .= "📝 Detalle del Pedido:\n"; // Detalle del pedido
+        $message = "🛒 *Orden de Compra*\n"; // Icono de carrito y título
+        $message .= "Número de Orden: *m525pl7w33*\n\n"; // Número de orden, importante para seguimiento
+        $message .= "📝 *Detalle del Pedido*:\n"; // Detalle del pedido
         $message .= "Cantidad | Producto | Precio\n"; // Encabezado de la tabla
-        $message .= "-----------------------------------\n"; // Separador
+        $message .= "-----------------------------------\n"; // Carácter de separación para la tabla
 
         foreach ($products as $product) {
-            $message .= sprintf(
-                "%8s | %-30s | $%s\n", // Formato de cada fila
+            $message .= sprintf("%8s | %-30s | $%s\n",
                 $product['quantity'], // Cantidad
                 substr($product['name'], 0, 30), // Nombre del producto (truncate si es muy largo)
                 number_format($product['sale_price'], 2) // Precio con dos decimales
             );
         }
-        $message .= "\n"; // Salto de línea para separar
 
-        $message .= "💰 Resumen de la Orden:\n"; // Resumen de la orden
-        $message .= "Subtotal: $" . number_format($subtotal_amount, 2) . "\n"; // Subtotal
-        $message .= "Descuento: -$" . number_format(0, 2) . "\n"; // Descuento
-        $message .= "Domicilio: $" . number_format($delivery_fee, 2) . "\n"; // Domicilio
-        $message .= "Total: $" . number_format($total_amount, 2) . "\n\n"; // Total y salto de línea
+        $message .= "\n" . "💰 *Resumen de la Orden*:\n"; // Resumen de la orden
+        $message .= "*Subtotal*: $" . number_format($subtotal_amount, 2) . "\n"; // Subtotal
+        $message .= "*Descuento*: -$" . number_format(0, 2) . "\n"; // Descuento
+        $message .= "*Domicilio*: $" . number_format($delivery_fee, 2) . "\n"; // Domicilio
+        $message .= "*Total*: $" . number_format($total_amount, 2) . "\n\n"; // Total y salto de línea
 
-        $message .= "📦 Información del Pedido:\n"; // Información del pedido
-        $message .= "Creador de la Orden: " . $detailsPersonBuyer['first_name'] . "\n"; // Nombre del comprador
-        $message .= "Nombre del Comprador: " . $detailsPersonPurchase['first_name'] . "\n"; // Nombre del comprador
-        $message .= "Nombre del Receptor: " . $detailsPersonDelivery['first_name'] . "\n\n"; // Nombre del receptor
+        $message .= "📦 *Información del Pedido*:\n"; // Información del pedido
+        $message .= "*Creador de la Ordende la compra*: " . $detailsPersonBuyer['first_name'] . "\n"; // Nombre del comprador
+        $message .= "*NOmbre del comprador*: " . $detailsPersonPurchase['first_name'] . "\n"; // Nombre del comprador
+        $message .= "*Nombre del Receptor*: " . $detailsPersonDelivery['first_name'] . "\n\n"; // Nombre del receptor
 
-        $message .= "📞 Contacto:\n"; // Contacto
-        $message .= "[Logo de la Empresa]\n"; // Placeholder para el logo (reemplaza con la URL de tu logo)
-        $message .= "Puedes ver el detalle de tu pedido en el siguiente enlace:\n"; // Enlace al detalle del pedido
-        $message .= "https://mercadoplus.digilysolutions.com/" . "\n"; // Enlace
+        $message .= "\nNúmero de WhatsApp: " . $whatsapp . "\n"; // Agrega el número de WhatsApp
 
 
-/*
-        $mensaje = "
-       🛒 *Orden de Compra*
-        Número de Orden: *m525pl7w33*
-
-        📝 *Detalle del Pedido:*
-        Cantidad | Producto                     | Precio
-        " . implode("\n", array_map(function ($product) {
-            return "{$product['quantity']}        | {$product['name']} | \${$product['sale_price']}";
-        }, $products)) . "
-
-        💰 *Resumen de la Orden:*
-        Subtotal: \${$subtotal_amount}
-        Descuento: -\$0
-        Domicilio: \${$delivery_fee}
-        Total: \${$total_amount}
-
-        📦 *Información del Pedido:*
-         creador de la Orden: {$detailsPersonBuyer['first_name']} /  {$detailsPersonBuyer['phone']}
-         Comprador: {$detailsPersonPurchase['first_name']} /  {$detailsPersonPurchase['phone']}
-         Receptor: {{$detailsPersonDelivery['first_name']} /  {$detailsPersonDelivery['phone']}
-
-
-        📞 *Contacto:*
-        [Logo de la Empresa]
-        Puedes ver el detalle de tu pedido en el siguiente enlace:
-        " . URL::to('https://mercadoplus.digilysolutions.com/'); // Reemplaza con el enlace de tu detalle de pedido
-        $mensaje = trim($mensaje);
-
-        // Codificar el mensaje
-        $mensajeEncoded = urlencode($mensaje);*/
-        $url = "https://wa.me/{$whatsapp}?text={$message}";
-
+        $url = "https://wa.me/{$whatsapp}?text=" . urlencode($message);
+        Session::forget('cart');
         // Redirigir al enlace de WhatsApp
         return redirect($url);
     }
