@@ -10,18 +10,22 @@ class ViewServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-     
+
         View::composer('layouts.partials-frontend.navbar', function ($view) {
             $categoryController = app(NavbarController::class);
-            $menuCategories = $categoryController->getMenuItemsCategories();  
+            $menuCategories = $categoryController->getMenuItemsCategories();
+            $specialOfferProduct = $categoryController->specialOffer();
             // Comparte las categorías con la vista
-            $view->with('menuCategories', $menuCategories);           
+            $view->with('menuCategories', $menuCategories)
+             ->with('specialOfferProduct', $specialOfferProduct);
         });
          // Puedes agregar más vistas aquí si lo necesitas
-         View::composer('index', function ($view) { 
+         View::composer('index', function ($view) {
             $categoryController = app(NavbarController::class);
-            $menuCategories = $categoryController->getMenuItemsCategories();                 
-            $view->with('menuCategories', $menuCategories);
+            $menuCategories = $categoryController->getMenuItemsCategories();
+            $specialOfferProduct = $categoryController->specialOffer();
+            $view->with('menuCategories', $menuCategories)
+            ->with('specialOfferProduct', $specialOfferProduct);
         });
     }
     /**

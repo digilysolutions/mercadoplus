@@ -23,7 +23,7 @@
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30">
                     <a class="breadcrumb-item text-orange-mobile" href="/">Inicio</a>
-                    <a class="breadcrumb-item text-orange-mobile" href="shop.html">Tienda</a>
+                    <a class="breadcrumb-item text-orange-mobile" href="/shop">Tienda</a>
                     <span class="breadcrumb-item text-dark-mobile active ">Carrito de Compra</span>
                 </nav>
             </div>
@@ -142,7 +142,7 @@
 @section('js')
     <script src="{{ asset('includes/app/cart.js') }}"></script>
     <script>
-        
+
         function minusProductToCart(button, productId, quantity) {
             removeProductToCart(button, productId);
 
@@ -199,11 +199,11 @@
 
             // Manejar el cambio en el select
             $('#delivery-zone-select').change(function() {
-               
+
                 var selectedId = $(this).val();
 
                 var url = "{{ route('product.checkout', ':id') }}".replace(':id', selectedId);
-                $('#checkout-button').attr('href', url);               
+                $('#checkout-button').attr('href', url);
                 $('#complete-purchase').attr('href', url);
                 subtotal = $('#subtotal-price-product').text();
                 subtotal = subtotal.replace('$', '').trim();
@@ -239,19 +239,19 @@
         });
 
         function upateTableCart() {
-           
+
             $.ajax({
-                url: '/cart/infoCart', // Asegúrate de que esta ruta retorne un JSON  
+                url: '/cart/infoCart', // Asegúrate de que esta ruta retorne un JSON
                 method: 'GET',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(data) {                
+                success: function(data) {
                     $.each(data.products, function(index, item) {
                         var quantity = $('#quantity-input-' + item.id).val();
                         var sale_price =item.sale_price;
                         var subtotal_price =sale_price* quantity;
-                       
+
                         $('.sale-price-' + item.id).text('$' + sale_price);
                         $('.total-price-row-' + item.id).text('$' + subtotal_price);
                     });

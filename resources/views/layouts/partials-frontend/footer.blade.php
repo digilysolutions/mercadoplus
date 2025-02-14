@@ -32,7 +32,7 @@
                             Cliente</a>
                         <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Oferta del
                             Día</a>
-                        <a class="text-secondary mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Tienda</a>
+                        <a class="text-secondary mb-2" href="/shop"><i class="fa fa-angle-right mr-2"></i>Tienda</a>
                         <a class="text-secondary mb-2" href="contact.html"><i
                                 class="fa fa-angle-right mr-2"></i>Contacto</a>
                     </div>
@@ -136,7 +136,6 @@
         });
         //adicionar producto
         $(document).on('click', '.addcart', function() {
-            console.log("sss");
             const productId = $(this).data('id');
             addProductCart(productId, 1);
         });

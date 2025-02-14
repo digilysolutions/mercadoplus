@@ -28,11 +28,11 @@
             </button>
             <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
               <div class="navbar-nav mr-auto py-0">
-                <a href="index.html" class="nav-item nav-link active">Oferta del Día</a>
-                <a href="shop.html" class="nav-item nav-link">Servicio al Cliente</a>
-                <a href="shop.html" class="nav-item nav-link"> Tienda</a>
+                @if($specialOfferProduct) <a href="/specialoffer" class="nav-item nav-link active">Oferta del Día</a>@endif
+                <a href="/customer-service" class="nav-item nav-link">Servicio al Cliente</a>
+                <a href="/shop" class="nav-item nav-link"> Tienda</a>
 
-                <a href="contact.html" class="nav-item nav-link">Contacto</a>
+                <a href="/contact" class="nav-item nav-link">Contacto</a>
               </div>
 
               <div class="top-cart-block">

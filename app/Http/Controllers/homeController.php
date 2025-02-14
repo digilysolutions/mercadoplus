@@ -14,6 +14,7 @@ use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 
 class homeController extends Controller
 {
@@ -24,6 +25,7 @@ class homeController extends Controller
     protected $reviewService;
     protected $countryCurrencyService;
     protected $deliveryZones;
+    protected $filterProducts;
     public function __construct(ReviewService $reviewService, DeliveryZonesService $deliveryZones, ContactService $contactService, PersonService  $personService, CartService  $cartService, CountryCurrencyService $countryCurrencyService, ProductService $productsService)
     {
         $this->cartService = $cartService;
@@ -36,20 +38,25 @@ class homeController extends Controller
         if (!Session::has('currency')) {
             Session::put('currency', 'MN'); // Establece un valor predeterminado
         }
+        $this->filterProducts = collect();
     }
     public function index()
     {
         $currency = $this->getCurrency();
         $products = $this->productsService->getProducts();
+
         $products = $products['data'];
         $randomProducts = $products;
         $latestProducts = collect($products);
         $latestProducts = $latestProducts->sortByDesc('created_at')->take(8);
+
+        $featuredProducts = collect($products);
+        $featuredProducts = $featuredProducts->sortByDesc('views')->take(8);
         shuffle($randomProducts);
         $countryCurrencies = $this->countryCurrencyService->getCountryCurrency();
         $countryCurrencies = $countryCurrencies['data'];
 
-        return view('index', compact('latestProducts', 'randomProducts', 'countryCurrencies', 'currency'));
+        return view('index', compact('latestProducts', 'randomProducts', 'countryCurrencies', 'currency', 'featuredProducts'));
     }
 
     public function productsExchangeRates($currency)
@@ -76,22 +83,27 @@ class homeController extends Controller
 
     public function detailsProduct($idProduct)
     {
+
         $currency = Session::get('currency');
         $dataProduct = [
             'products_id' => [$idProduct],
             'currency' => $currency
         ];
         $product = $this->productsService->exchangeRateProduct($dataProduct)[0];
+        $products = $this->productsService->getProducts();
+        $products = $products['data'];
+        $randomProducts = $products;
+        shuffle($randomProducts);
 
-       /* $data = $this->productsService->showProduct($idProduct);
+        /* $data = $this->productsService->showProduct($idProduct);
         $product = $data['data']['product'];
         $averageRating = $data['data']['averageRating'];
         $attributeTerms = $data['data']['attributeTerms'];
         $currentPrice = $data['data']['currentPrice'];*/
 
         $averageRating = $product['averageRating'];
-       // $attributeTerms =$product['attributeTerms'];
-       // $currentPrice = $product['currentPrice'];
+        // $attributeTerms =$product['attributeTerms'];
+        // $currentPrice = $product['currentPrice'];
 
 
         $currency = $this->getCurrency();
@@ -109,10 +121,11 @@ class homeController extends Controller
             }
             $product_attribute_terms['attribute'][$attribute_name][] = $term['name'];
         }
+
         //$cart =  Session::get('cart');
 
 
-        return view('app.detailsproduct', compact('currency', 'ratings', 'product', 'countryCurrencies', 'product_attribute_terms', 'comments'));
+        return view('app.detailsproduct', compact('currency', 'ratings', 'randomProducts', 'product', 'countryCurrencies', 'product_attribute_terms', 'comments'));
     }
     public function getCurrency()
     {
@@ -151,7 +164,7 @@ class homeController extends Controller
     {
         $cart = Session::get('cart');
 
-        if (empty($cart) || count($cart)==0) {
+        if (empty($cart) || count($cart) == 0) {
             return redirect('/');
         }
         if (is_array($cart)) {
@@ -174,6 +187,7 @@ class homeController extends Controller
     public function orderPurchase(Request $request)
     {
         $cart = Session::get('cart');
+
         if (is_array($cart)) {
             $subtotal_amount = 0;
             $total_amount = 0;
@@ -187,35 +201,39 @@ class homeController extends Controller
             ];
 
             //Obtener de name y el phone la persona que realiza la oden  de la BD a ver si existe, de no existir la mando a crear y guardo el id de la persona para enviarla
-            $detailsPerson = [
+            $detailsPersonBuyer = [
                 'first_name' => $request->name,
                 'phone' => $request->phone,
             ];
-            $person =  $this->personService->createPerson($detailsPerson);
+            $person =  $this->personService->createPerson($detailsPersonBuyer);
             $purchasePerson = $person;
 
             $phone = $request->input('phone_other_person');
             $name = $request->input('name_other_person');
-            if (!empty($phone) && empty($name)) {
-                $detailsPerson = [
-                    'first_name' => $name,
-                    'phone' => $phone,
+
+            if (!empty($phone) && !empty($name)) {
+                $detailsPersonPurchase = [
+                    'first_name' => $request->phone_other_person,
+                    'phone' => $request->name_other_person,
                 ];
-                $purchasePerson = $this->personService->createPerson($detailsPerson);
+                $purchasePerson = $this->personService->createPerson($detailsPersonPurchase);
             }
+
             $phone = $request->input('phone_receives_purchase');
             $name = $request->input('name_receives_purchase');
-            if (!empty($phone) && empty($name)) {
-                $detailsPerson = [
+
+            if (!empty($phone) && !empty($name)) {
+                $detailsPersonDelivery = [
                     'first_name' => $name,
                     'phone' => $phone,
                 ];
-                $deliveryPerson = $this->personService->createPerson($detailsPerson);
+                $deliveryPerson = $this->personService->createPerson($detailsPersonDelivery);
                 $data['delivery_person_id'] = $deliveryPerson['data']['id'];
             }
             $data['home_delivery'] = isset($data['home_delivery']) && $data['home_delivery'] == 'on' ? 1 : 0;
             if ($data['home_delivery']) {
                 $deliveryZone = $this->deliveryZones->showDeliveryZone($data['deliveryzona_id'])['data'];
+                $delivery_name= $deliveryZone['location']['name'] ;
                 $delivery_fee = $deliveryZone['price'];
                 $delivery_time = $deliveryZone['delivery_time'];
                 $time_unit = $deliveryZone['time_unit'];
@@ -246,8 +264,191 @@ class homeController extends Controller
             $data['delivery_fee'] = $delivery_fee;
             $data['person_id'] = $person['data']['id'];
             $data['purchase_person_id'] = $purchasePerson['data']['id'];
-            return $data;
+            return $this->sendWhatsapp($detailsPersonBuyer,$detailsPersonPurchase,$detailsPersonDelivery,$cart, $data['home_delivery'],
+            $delivery_name, $delivery_fee,$delivery_time, $time_unit, $subtotal_amount, $total_amount);
+
         }
+        return "No paso";
         return $this->index();
+    }
+    public function   sendWhatsapp($detailsPersonBuyer,$detailsPersonPurchase,$detailsPersonDelivery,$products,$home_delivery,
+    $delivery_name, $delivery_fee,$delivery_time, $time_unit, $subtotal_amount, $total_amount)
+    {
+        $whatsapp = 5358205054;
+        if($home_delivery)
+        {
+            $delivery="
+             Domicilio: Si
+             Zona: {$delivery_name}
+             Tiempo de entrega: {$delivery_time} {$time_unit}
+            ";
+        }
+        $mensaje = "
+       🛒 *Orden de Compra*
+        Número de Orden: *m525pl7w33*
+
+        📝 *Detalle del Pedido:*
+        Cantidad | Producto                     | Precio
+        " . implode("\n", array_map(function($product) {
+                return "{$product['quantity']}        | {$product['name']} | \${$product['sale_price']}";
+            }, $products)) . "
+
+        💰 *Resumen de la Orden:*
+        Subtotal: \${$subtotal_amount}
+        Descuento: -\$0
+        Domicilio: \${$delivery_fee}
+        Total: \${$total_amount}
+
+        📦 *Información del Pedido:*
+         creador de la Orden: {$detailsPersonBuyer['first_name']} /  {$detailsPersonBuyer['phone']}
+         Comprador: {$detailsPersonPurchase['first_name']} /  {$detailsPersonPurchase['phone']}
+         Receptor: {{$detailsPersonDelivery['first_name']} /  {$detailsPersonDelivery['phone']}
+
+
+        📞 *Contacto:*
+        [Logo de la Empresa]
+        Puedes ver el detalle de tu pedido en el siguiente enlace:
+        " . URL::to('https://mercadoplus.digilysolutions.com/'); // Reemplaza con el enlace de tu detalle de pedido
+            $mensaje = trim($mensaje);
+
+            // Codificar el mensaje
+            $mensajeEncoded = urlencode($mensaje);
+            $url = "https://wa.me/{$whatsapp}?text={$mensajeEncoded}";
+
+            // Redirigir al enlace de WhatsApp
+            return redirect($url);
+
+    }
+    public function customerservice()
+    {
+        $countryCurrencies = $this->countryCurrencyService->getCountryCurrency();
+        $countryCurrencies = $countryCurrencies['data'];
+        $currency = $this->getCurrency();
+        return view('app.customerservice', compact('countryCurrencies', 'currency'));
+    }
+    public function contact()
+    {
+        $countryCurrencies = $this->countryCurrencyService->getCountryCurrency();
+        $countryCurrencies = $countryCurrencies['data'];
+        $currency = $this->getCurrency();
+        return view('app.contact', compact('countryCurrencies', 'currency'));
+    }
+    public function specialOffer()
+    {
+        $countryCurrencies = $this->countryCurrencyService->getCountryCurrency();
+        $countryCurrencies = $countryCurrencies['data'];
+        $products = $this->productsService->getProducts();
+        $products = $products['data'];
+        $specialOfferProducts = collect($products);
+
+        // Filtrar los productos
+        $specialOfferProducts = $specialOfferProducts->filter(function ($product) {
+            return $product['discounted_price'] > 0 && $product['discounted_price'] < $product['sale_price'];
+        });
+        $currency = $this->getCurrency();
+        return view('app.specialoffer', compact('countryCurrencies', 'currency', 'specialOfferProducts'));
+    }
+    public function sendMessageContact(Request $request)
+    {
+        // Validar los datos del formulario
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'whatsapp' => 'required|string|max:15',
+            'subject' => 'nullable|string|max:255',
+            'message' => 'required|string|max:2500',
+        ]);
+
+        // Obtener los datos
+        $name = $request->input('name');
+        $whatsapp = $request->input('whatsapp');
+        $subject = $request->input('subject');
+        $message = $request->input('message');
+
+        // Número del WhatsApp de la empresa (asegúrate de que este sea el formato correcto)
+        $whatsappNumber = '5353947137';
+
+        // Formato del mensaje con emojis y saltos de línea
+        $whatsappMessage = "*Nombre:* " . urlencode($name) . "%0A" .
+            "*Número de WhatsApp:* " . urlencode($whatsapp) . "%0A" .
+            ($subject ? "*Asunto:* " . urlencode($subject) . "%0A" : '') .
+            "*Mensaje:* " . urlencode($message) . "%0A%0A" .
+            "¡Gracias por ponerte en contacto con nosotros! 😊%0A" .
+            "Este mensaje fue enviado desde la sección de contacto.%0A" .
+            "Visita nuestro sitio: (http://mercadoplus.digilysolutions.com)%0A" .
+            "¡Esperamos tu mensaje!";
+
+        // Crear la URL de WhatsApp
+        $whatsappUrl = "https://wa.me/$whatsappNumber?text=" . $whatsappMessage;
+        return  $whatsappUrl;
+    }
+    public function shop(Request $request)
+    {
+        $countryCurrencies = $this->countryCurrencyService->getCountryCurrency();
+        $countryCurrencies = $countryCurrencies['data'];
+        $currency = $this->getCurrency();
+        $products = $this->productsService->getProducts();
+        $this->filterProducts = collect($products['data']);
+        $productsCollection = collect($products['data']);
+
+        // Definir la cantidad de productos por página
+        $perPage = 10; // Cambia esto al número que quieras por página
+        // Paginación
+        $currentPage = $request->input('page', 1); // Obtener el número de la página actual desde la URL
+        $paginatedProducts = $productsCollection->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        // Crear una instancia de LengthAwarePaginator
+        $productsPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginatedProducts,
+            $productsCollection->count(),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+        return view('app.shop', compact('countryCurrencies', 'currency', 'productsPaginator'));
+    }
+    public function getFilteredProducts(Request $request)
+    {
+        if (count($this->filterProducts) == 0 || empty($this->filterProducts)) {
+            $products = $this->productsService->getProducts();
+            $this->filterProducts = collect($products['data']);
+        }
+
+        // Filtrar productos según los criterios
+        if ($request->has('color')) {
+            $this->filterProducts = $this->filterProducts->filter(function ($product) use ($request) {
+                return in_array($product['color'], $request->input('color'));
+            });
+        }
+
+        if ($request->has('size')) {
+            $this->filterProducts = $this->filterProducts->filter(function ($product) use ($request) {
+                return in_array($product['size'], $request->input('size'));
+            });
+        }
+
+        if ($request->has('price_min')) {
+            $this->filterProducts = $this->filterProducts->where('price', '>=', $request->input('price_min'));
+        }
+
+        if ($request->has('price_max')) {
+            $this->filterProducts = $this->filterProducts->where('price', '<=', $request->input('price_max'));
+        }
+
+        if ($request->has('name')) {
+            $this->filterProducts = $this->filterProducts->filter(function ($product) use ($request) {
+                return str_contains(strtolower($product['name']), strtolower($request->input('name')));
+            });
+        }
+
+        if ($request->has('brand')) {
+            $this->filterProducts = $this->filterProducts->filter(function ($product) use ($request) {
+                return in_array($product['brand'], $request->input('brand'));
+            });
+        }
+
+        // Retornar los productos filtrados
+        return response()->json($this->filterProducts);
+
+        return $this->filterProducts;
     }
 }

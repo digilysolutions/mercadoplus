@@ -23,8 +23,10 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TermsController;
-use App\Http\Controllers\UnitBaseController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UnitBaseController;
+use App\Http\Controllers\GoogleController;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -156,6 +158,7 @@ Route::get('/admin/products', [ProductController::class, 'index'])->name('produc
 Route::get('/admin/products/create', [ProductController::class, 'create'])->name('product.create');
 Route::post('/admin/products', [ProductController::class, 'store'])->name('product.store');
 Route::get('/admin/products/{id}', [ProductController::class,  'show'])->name('product.show');
+Route::get('/admin/products/{id}/edit', [ProductController::class,  'edit'])->name('product.edit');
 Route::delete('/admin/products/{id}', [ProductController::class, 'delete']);
 Route::put('/admin/products/{id}', [ProductController::class, 'update'])->name('product.update');
 
@@ -228,3 +231,9 @@ Route::get('/cart/infoCart', [CartController::class, 'infoCart']);
 Route::get('/cart/exitProduct/{id}', [CartController::class, 'existProduct']);
 
 Route::post('/reviews/add', [homeController::class, 'storeReview'])->name('review.add');
+Route::get('/customer-service', [homeController::class, 'customerservice']);
+Route::get('/contact', [homeController::class, 'contact']);
+Route::post('/sendmessage', [homeController::class, 'sendMessageContact'])->name('contact.sendmessage');
+Route::get('/specialoffer', [homeController::class, 'specialOffer']);
+Route::get('/shop', [homeController::class, 'shop']);
+Route::get('/shop', [homeController::class, 'shop']);

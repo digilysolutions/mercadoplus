@@ -1,6 +1,6 @@
 @extends('layouts.app-admin')
 @section('title-header-admin')
-    Productos
+   Editr  Producto
 @endsection
 @section('css')
     <style>
@@ -124,8 +124,9 @@
 @endsection
 
 @section('content-admin')
-    <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('product.update', $product['id']) }}" method="POST" enctype="multipart/form-data">
         @csrf
+        @method('PUT')
         <div class="container-fluid">
             <div class="row">
 
@@ -135,7 +136,7 @@
                         <div class="card">
                             <div class="card-header d-flex justify-content-between">
                                 <div class="header-title">
-                                    <h4 class="card-title">Añadir un nuevo producto</h4>
+                                    <h4 class="card-title">Editar  producto</h4>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -145,14 +146,14 @@
                                             <label>Nombre *</label>
                                             <input name="name" id="name" type="text" class="form-control"
                                                 placeholder="Entrar nombre del producto"
-                                                data-errors="Por favor, nombre del producto." required="">
+                                                data-errors="Por favor, nombre del producto." required="" value="{{$product['name']}}">
                                             <div class="invalid-feedback">Por favor, introduce el nombre del producto.</div>
                                         </div>
                                     </div>
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label>Descripción del producto</label>
-                                            <textarea class="form-control" name="description" id="description" rows="3"></textarea>
+                                            <textarea class="form-control" name="description" id="description" rows="3" >{{$product['description']}}</textarea>
 
                                         </div>
                                     </div>

@@ -89,7 +89,7 @@
                                         title="" data-original-title="View"
                                         href="{{ route('product.show', ['id' => $product['id']]) }}"><i
                                             class="ri-eye-line mr-0"></i></a>
-                                    <a class="badge bg-success mr-2" data-toggle="tooltip" data-placement="top"
+                                    <a   href="{{ route('product.edit', ['id' => $product['id']]) }}" class="badge bg-success mr-2" data-toggle="tooltip" data-placement="top"
                                         title="" data-original-title="Edit" href="#"><i
                                             class="ri-pencil-line mr-0"></i></a>
                                     <a class="badge bg-warning mr-2 " data-toggle="tooltip" data-placement="top"

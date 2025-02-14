@@ -58,6 +58,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+
         $data = $request->only(
             [
                 'name', //OK
@@ -75,8 +76,8 @@ class ProductController extends Controller
                 'outstanding_image',
                 'description', //OK
                 'description_small', //OK
-                'purchase_price',      //OK          
-                'enable_stock', //OK 
+                'purchase_price',      //OK
+                'enable_stock', //OK
                 'brand_id', //ok
                 'terms_id', //ok
                 'model_id', //ok
@@ -84,6 +85,7 @@ class ProductController extends Controller
                 'deliveryZones', //ok
                 'tag_id', //OK
                 'weight',
+                'categories',
                 'height',
                 'width',
                 'length',
@@ -93,6 +95,7 @@ class ProductController extends Controller
                 'is_activated', //ok
             ]
         );
+
         $data['enable_delivery'] = (isset($data['deliveryZones']) && count($data['deliveryZones']) > 0);
 
         $request->validate([
@@ -107,22 +110,45 @@ class ProductController extends Controller
         $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
         $data['enable_stock'] = isset($data['enable_stock']) && $data['enable_stock'] == 'on' ? 1 : 0;
         $data['enable_reservation'] = isset($data['enable_reservation']) && $data['enable_reservation'] == 'on' ? 1 : 0;
+
         $this->productsService->createProduct($data);
         return $this->index();
     }
 
     public function show($id)
-    { 
+    {
         $data = $this->productsService->showProduct($id);
-        $product = $data['product'];
-        $averageRating = $data['averageRating'];
-        $attributeTerms = $data['attributeTerms'];
-        $currentPrice = $data['currentPrice'];
 
+        $product = $data['data'];
+        $averageRating = $product['averageRating'];
+        $attributeTerms = $product['attributeTerms'];
+        $currentPrice = $product['currentPrice'];
+        $product = $product['product'];
         // Devuelve el producto como respuesta JSON
         return view('admin.products.show', compact('product', 'averageRating', 'attributeTerms', 'currentPrice'));
     }
-   
+    public function  edit($id)
+    {
+        $data = $this->productsService->showProduct($id);
+        $product = $data['data']['product'];
+        //Ubicacion
+        /*  $locations = $this->locationService->getLocations();
+        $locations  = $locations["data"];
+        $businesses = $this->businessService->getBusiness();
+        $businesses  = $businesses["data"];*/
+        $attributes =  $this->attributeService->getAttributes();
+        $attributes = $attributes['data'];
+        $categories = $this->categoryService->getCategories();
+        $categories = $categories['data'];
+        $brands = $this->brandService->getBrands();
+        $brands = $brands['data'];
+        $deliveryZones = $this->deliveryZones->getDeliveryZones();
+        $deliveryZones = $deliveryZones['data'];
+        $units = $this->unitService->getUnits();
+        $units = $units['data'];
+
+        return view('admin.products.update-products', compact('units','product', 'categories', 'attributes', 'brands', 'deliveryZones')); // Muestra la vista 'people.create'
+    }
     public function delete($id)
     {        // Obtiene la puntacion por ID
         $product = $this->productsService->deleteProduct($id);
@@ -137,7 +163,7 @@ class ProductController extends Controller
         $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
 
         $product = $this->productsService->updateProduct($id, $data);
-        // Devuelve el producto  actualizada como respuesta JSON o redirige a la lista        
+        // Devuelve el producto  actualizada como respuesta JSON o redirige a la lista
         return  $this->index();
     }
 

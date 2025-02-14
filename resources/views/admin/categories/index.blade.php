@@ -2,6 +2,18 @@
 @section('title-header-admin')
     Categorías
 @endsection
+@section('css')
+    <style>
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input {
+            margin-bottom: 15px;
+        }
+    </style>
+@endsection
 
 @section('content-admin')
     <div class="container-fluid add-form-list">
@@ -53,7 +65,7 @@
                                                 rowspan="1" colspan="1"
                                                 aria-label="Category: activate to sort column ascending"
                                                 style="width: 70.4531px;">Moneda</th>
-                                         
+
 
                                             <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0"
                                                 rowspan="1" colspan="1"
@@ -92,8 +104,8 @@
                                                 </td>
                                                 <td>{{ $category['name'] }}</td>
                                                 <td>{{ $category['code_currency_default'] }}</td>
-                                               
-                                              
+
+
                                                 <td>{{ count($category['products']) }}</td>
                                                 <td>
                                                     @if ($category['is_activated'] == 1)
@@ -106,16 +118,10 @@
                                                     <div class="d-flex align-items-center list-action">
                                                         <a class="badge badge-info mr-2" data-toggle="tooltip"
                                                             data-placement="top" title="" data-original-title="Ver"
-                                                            href="#"><i class="ri-eye-line mr-0"
-                                                                data-toggle="modal"
+                                                            href="#"><i class="ri-eye-line mr-0" data-toggle="modal"
                                                                 data-target="#categoryShowModal{{ $category['id'] }}"
                                                                 data-id="{{ $category['id'] }}"></i></a>
-                                                        <a class="badge bg-success mr-2" data-toggle="tooltip"
-                                                            data-placement="top" title=""
-                                                            data-original-title="Editar" href="#"><i
-                                                                class="ri-pencil-line mr-0 btn-edit" data-toggle="modal"
-                                                                data-target="#categoryEditModal{{ $category['id'] }}"
-                                                                data-id="{{ $category['id'] }}"></i></a>
+
                                                         <a class="badge bg-warning mr-2 " data-toggle="tooltip"
                                                             data-placement="top" title=""
                                                             data-original-title="Eliminar" href="#"><i
@@ -128,8 +134,6 @@
                                             <!-- Modal Show Categoria-->
                                             @include('admin.categories.show-modal')
 
-                                            <!-- Modal para Editar la categoría -->
-                                            @include('admin.categories.update-modal')
                                             <!-- Modal para eliminar la categoría -->
                                             @include('admin.categories.delete-modal')
                                         @endforeach
@@ -154,4 +158,39 @@
     @section('js')
         <script src="{{ asset('includes/admin/categories-admin.js') }}"></script>
         <script src="{{ asset('includes/admin/script.js') }}"></script>
+        <script>
+            $(document).ready(function() {
+                // Cargar las monedas desde el select
+                const currencies = $('#baseCurrency option').map(function() {
+                    return $(this).val();
+                }).get();
+
+                $('#baseCurrency').change(function() {
+                    const selectedCurrency = $(this).val();
+                    $('#exchangeRatesContainer').show(); // Mostrar el contenedor de tasas de cambio
+                    $('#exchangeRates').empty(); // Limpiar tasas de cambio previamente mostradas
+
+                    currencies.forEach(currency => {
+                        if (currency !== selectedCurrency) {
+                            // Crear elementos de input para las monedas seleccionadas
+                            $('#exchangeRates').append(`
+                    <label for="${currency}">${currency}:</label>
+                    <input class="form-control" name="yYYYy" type="number" id="${currency}" step="0.01" placeholder="Introduce tasa de cambio"><br>
+                `);
+                        }
+                    });
+                    // Crear un arreglo con las monedas excluyendo la seleccionada
+                    updateCurrencyArray(selectedCurrency);
+                });
+
+
+                function updateCurrencyArray(selectedCurrency) {
+                    // Crear un arreglo de monedas excluyendo la moneda seleccionada
+                    const currencyData = currencies.filter(currency => currency !== selectedCurrency);
+
+                    // Llenar el campo oculto con el arreglo convertido a JSON
+                    $('#currencyArray').val(JSON.stringify(currencyData));
+                }
+            });
+        </script>
     @endsection

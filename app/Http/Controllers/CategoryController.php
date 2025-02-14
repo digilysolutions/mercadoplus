@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\CategoryService;
+use App\Services\CountryCurrencyService;
 use App\Services\CurrencyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -11,26 +12,33 @@ class CategoryController extends Controller
 {
     protected $categoryService;
     protected $currencyService;
+    protected $countryCurrencyService;
 
-    public function __construct(CategoryService $categoryService,CurrencyService $currencyService)
+    public function __construct(CountryCurrencyService $countryCurrencyService, CategoryService $categoryService, CurrencyService $currencyService)
     {
         $this->categoryService = $categoryService;
         $this->currencyService = $currencyService;
+        $this->countryCurrencyService = $countryCurrencyService;
     }
 
     public function index()
     {
         $categories = $this->categoryService->getCategories();
-        $currencies = $this->currencyService->getCurrencies();
+        //$currencies = $this->currencyService->getCurrencies();
+
+        $currencies = $this->countryCurrencyService->getCountryCurrency();
+        $currencies  = $currencies["data"];
 
         $categories  = $categories["data"];
-        $currencies  = $currencies["data"];
-        return view('admin.categories.index', compact('categories','currencies'));
+
+
+        //   $currencies  = $currencies["data"];
+        return view('admin.categories.index', compact('categories', 'currencies'));
     }
-    
+
     public function storeCategoryName(Request $request)
-    {        
-        $data = $request->only(['name', 'path_image' ]);  
+    {
+        $data = $request->only(['name', 'path_image']);
         $request->validate([
             'path_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp' // tamaño máximo 2MB
         ]);
@@ -49,7 +57,7 @@ class CategoryController extends Controller
 
         /* The code snippet you provided is from a PHP Laravel controller `CategoryController`. Let's
        break down the code: */
-        $data = $request->only(['name', 'description', 'path_image', 'is_activated','code_currency_default','is_exchange_rate']);
+        $data = $request->only(['name', 'description', 'path_image', 'is_activated', 'code_currency_default', '   ']);
         // Convertir is_activated a un valor entero (1 o 0)
         $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;        // Validar la solicitud para asegurarnos de que haya un archivo de imagen
         $request->validate([
@@ -61,7 +69,25 @@ class CategoryController extends Controller
 
         $data['path_image'] =  $imagePath;
 
+        // Capturar el arreglo de monedas
+        $currencyArray = json_decode($request->input('currencyArray'), true);
+        // Capturar la moneda por defecto
+        $codeCurrencyDefault = $request->input('code_currency_default'); // La moneda seleccionada
+
+        // Inicializar el arreglo exchangeRates
+        $exchangeRates = [];
+
+        foreach ($currencyArray as $currency) {
+            $exchangeRates[$currency] = $request->input($currency); // Captura el valor del input correspondiente
+        }
+
+
+
+        $data['exchange_rate'] =  [
+            $codeCurrencyDefault => $exchangeRates
+        ];
         $category = $this->categoryService->createCategory($data);
+
         return $this->index();
         //return redirect()->route('admin.categories.index')->with('success', 'Categoría creada exitosamente.');
     }
@@ -70,6 +96,19 @@ class CategoryController extends Controller
     {
         // Obtiene la categoría por ID
         $category = $this->categoryService->showCategory($id);
+        $exchangeRatesArray = json_decode($category->exchange_rates, true);
+        // Verificar que se haya decodificado correctamente
+        $formattedExchangeRates = [];
+        if ($exchangeRatesArray) {
+            // Iterar sobre las claves del array decodificado para obtener las tasas de cambio
+            foreach ($exchangeRatesArray as $baseCurrency => $rates) {
+                foreach ($rates as $currency => $rate) {
+                    $formattedExchangeRates[$currency] = $rate;
+                }
+            }
+        }
+        $category->exchange_rates =  $formattedExchangeRates;
+
         // Devuelve la categoría como respuesta JSON
         return response()->json($category);
     }
@@ -79,14 +118,14 @@ class CategoryController extends Controller
         $category = $this->categoryService->deleteCategory($id);
         // Devuelve la categoría como respuesta JSON
         return response()->json($category);
-    }  
+    }
 
     public function update(Request $request, $id)
     {
         // Obtener solo los datos relevantes del request
-        $data = $request->only(['name', 'description', 'path_image', 'is_activated','code_currency_default','is_exchange_rate']);       
+        $data = $request->only(['name', 'description', 'path_image', 'is_activated', 'code_currency_default', 'is_exchange_rate']);
         // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0; 
+        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
 
         // Validar la solicitud para asegurarnos de que haya un archivo de imagen
         if ($request->hasFile('path_image')) {
@@ -110,7 +149,7 @@ class CategoryController extends Controller
                 return response()->json(['error' => 'Categoría no encontrada o error en la solicitud'], 404);
             }
         }
-       
+
         $category = $this->categoryService->updateCategory($id, $data);
         // Devuelve la categoría actualizada como respuesta JSON o redirige a la lista
         //return response()->json($category); // o

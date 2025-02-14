@@ -31,11 +31,11 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Monedas<span style="color: #FF9770 !important;">*</span></label>
-                                        <select id="unit_id" name="unit_id" class="form-control">
+                                        <label>Seleccione una moneda:<span style="color: #FF9770 !important;">*</span></label>
+                                        <select id="baseCurrency" name="code_currency_default" class="form-control">
                                             @foreach ($currencies as $currency)
-                                                <option value="{{ $currency['code'] }}">
-                                                    {{ $currency['code'] }}</option>
+                                                <option value="{{ $currency['currency']['code'] }}">
+                                                    {{ $currency['currency']['code'] }}</option>
                                             @endforeach
 
                                         </select>
@@ -43,6 +43,10 @@
                                         <div class="help-block with-errors">
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-md-12" id="exchangeRatesContainer" style="display: none;">
+                                    <label>Tasas de cambio</label>
+                                    <div  id="exchangeRates"></div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -77,6 +81,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <input type="hidden" id="currencyArray" name="currencyArray" value="">
                             <button type="submit" class="btn btn-primary mr-2">Añadir</button>
                             <button type="reset" class="btn btn-secondary">Limpiar</button>
                         </form>
