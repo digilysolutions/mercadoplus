@@ -211,14 +211,12 @@ class homeController extends Controller
             $person =  $this->personService->createPerson($detailsPersonBuyer);
             $purchasePerson = $person;
 
-            $phone = $request->input('phone_other_person');
-            $name = $request->input('name_other_person');
+            $detailsPersonPurchase = [
+                'first_name' =>$request->name_other_person,
+                'phone' =>$request->phone_other_person,
+            ];
+            if (!empty($request->phone_other_person) && !empty($request->name_other_person)) {
 
-            if (!empty($phone) && !empty($name)) {
-                $detailsPersonPurchase = [
-                    'first_name' => $request->phone_other_person,
-                    'phone' => $request->name_other_person,
-                ];
                 $purchasePerson = $this->personService->createPerson($detailsPersonPurchase);
             }
 
