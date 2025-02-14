@@ -189,12 +189,12 @@
                             </a>
                             <div class="d-flex align-items-center justify-content-center mt-2">
                                 @if ($product['discounted_price'] != null && $product['discounted_price'] > 0)
-                                    <h4 class="product_{{ $product['id'] }}">${{ $product['discounted_price'] }}</h4>
-                                    <h4 id="" class="text-muted ml-2 product_{{ $product['id'] }}  sale-price"
+                                    <h2 class="product_{{ $product['id'] }}">${{ $product['discounted_price'] }}</h2>
+                                    <h2 id="" class="text-muted ml-2 product_{{ $product['id'] }}  sale-price"
                                         data-product-id={{ $product['id'] }}><del>${{ $product['sale_price'] ?? 0 }}</del>
-                                    </h4>
+                                    </h2>
                                 @else
-                                    <h4 class="product_{{ $product['id'] }}">${{ $product['sale_price'] ?? 0 }}</h4>
+                                    <h2 class="product_{{ $product['id'] }}">${{ $product['sale_price'] ?? 0 }}</h2>
                                 @endif
                             </div>
                             <div class="estrellas align-items-center justify-content-center " id="estrellas"
@@ -210,30 +210,30 @@
                                     <div class="btn-group mx-2">
                                         <button type="button" class="btn btn-sm btn-light dropdown-toggle"
                                             data-toggle="dropdown">
-                                            <i class="fas fa-money-bill icon-header"></i>
-                                            <strong class="selectedCurrency"
+                                            <i class="fas fa-money-bill icon-header fa-2x"></i>
+                                            <strong class="selectedCurrency h4"
                                                 data-product-id="{{ $product['id'] }}">{{ isset($product['categories']) && count($product['categories']) > 0 ? $product['categories'][0]['code_currency_default'] : '' }}</strong>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             @foreach ($countryCurrencies as $countryCurrency)
                                                 <button class="dropdown-item" type="button"
                                                     onclick="changeCurrency('{{ $countryCurrency['currency']['code'] }}', {{ $product['id'] }})">
-                                                    <strong>{{ $countryCurrency['currency']['code'] }}</strong>
+                                                    <strong class="h4">{{ $countryCurrency['currency']['code'] }}</strong>
                                                 </button>
                                             @endforeach
                                         </div>
                                     </div>
                                     <button type="button" class="btn btn-outline-dark addcart"
                                         data-id={{ $product['id'] }} data-toggle="tooltip" data-placement="bottom"
-                                        data-original-title="Añadir al Carrito"><i class="fa fa-shopping-cart"></i>
+                                        data-original-title="Añadir al Carrito"><i class="fa fa-shopping-cart fa-2x"></i>
                                     </button>
                                     <a href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}"
                                         id="more_details" class="btn btn-outline-dark ml-2" data-toggle="tooltip"
                                         data-placement="bottom" data-original-title="Ver Detalles"><i
-                                            class="fa fa-info-circle"></i></a>
+                                            class="fa fa-info-circle fa-2x"></i></a>
                                     <button class="btn btn-outline-dark btn-square ml-2" data-toggle="tooltip"
                                         data-placement="bottom" data-original-title="Añadir Lista de Deseos "><i
-                                            class="far fa-heart"></i></button>
+                                            class="far fa-heart fa-2x"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -291,14 +291,14 @@
                                 </a>
                                 <div class=" d-flex align-items-center justify-content-center mt-2">
                                     @if ($product['discounted_price'] != null && $product['discounted_price'] > 0)
-                                        <h4 class="product_{{ $product['id'] }}">${{ $product['discounted_price'] }}</h4>
-                                        <h4 id=""
+                                        <h2 class="product_{{ $product['id'] }}">${{ $product['discounted_price'] }}</h2>
+                                        <h2 id=""
                                             class="text-muted ml-2 product_{{ $product['id'] }}  sale-price"
                                             data-product-id={{ $product['id'] }}>
                                             <del>${{ $product['sale_price'] ?? 0 }}</del>
-                                        </h4>
+                                        </h2>
                                     @else
-                                        <h4 class="product_{{ $product['id'] }}">${{ $product['sale_price'] ?? 0 }}</h4>
+                                        <h2 class="product_{{ $product['id'] }}">${{ $product['sale_price'] ?? 0 }}</h2>
                                     @endif
                                 </div>
                                 <div class="estrellas align-items-center justify-content-center " id="estrellas"
@@ -314,30 +314,30 @@
                                         <div class="btn-group mx-2">
                                             <button type="button" class="btn btn-sm btn-light dropdown-toggle"
                                                 data-toggle="dropdown">
-                                                <i class="fas fa-money-bill icon-header"></i>
-                                                <strong class="selectedCurrency"
+                                                <i class="fas fa-money-bill icon-header fa-2x"></i>
+                                                <strong class="selectedCurrency h4"
                                                     data-product-id="{{ $product['id'] }}">{{ isset($product['categories']) && count($product['categories']) > 0 ? $product['categories'][0]['code_currency_default'] : '' }}</strong>
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right">
                                                 @foreach ($countryCurrencies as $countryCurrency)
                                                     <button class="dropdown-item" type="button"
                                                         onclick="changeCurrency('{{ $countryCurrency['currency']['code'] }}', {{ $product['id'] }})">
-                                                        <strong>{{ $countryCurrency['currency']['code'] }}</strong>
+                                                        <strong class="h4">{{ $countryCurrency['currency']['code'] }}</strong>
                                                     </button>
                                                 @endforeach
                                             </div>
                                         </div>
                                         <button type="button" class="btn btn-outline-dark addcart"
                                             data-id={{ $product['id'] }} data-toggle="tooltip" data-placement="bottom"
-                                            data-original-title="Añadir al Carrito"><i class="fa fa-shopping-cart"></i>
+                                            data-original-title="Añadir al Carrito"><i class="fa fa-shopping-cart fa-2x"></i>
                                         </button>
                                         <a href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}"
                                             id="more_details" class="btn btn-outline-dark ml-2" data-toggle="tooltip"
                                             data-placement="bottom" data-original-title="Ver Detalles"><i
-                                                class="fa fa-info-circle"></i></a>
+                                                class="fa fa-info-circle fa-2x"></i></a>
                                         <button class="btn btn-outline-dark btn-square ml-2" data-toggle="tooltip"
                                             data-placement="bottom" data-original-title="Añadir Lista de Deseos "><i
-                                                class="far fa-heart"></i></button>
+                                                class="far fa-heart fa-2x"></i></button>
                                     </div>
                                 </div>
                             </div>
