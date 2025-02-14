@@ -44,26 +44,7 @@
         </div>
         <div class="col-lg-12 d-block d-lg-none  text-center">
 
-            <div class="top-cart-block ">
-                <div class="top-cart-info" id="cart-info">
-                    <a href="javascript:void(0);" class="text-secundary top-cart-info-count" id="item-count">0 productos</a>
-                    <a href="javascript:void(0);" class="top-cart-info-value" id="total-price">$0.00</a>
-                </div>
 
-
-                <div class="top-cart-content-wrapper" id="cart-content" style="display: none;">
-                  <div class="top-cart-content">
-                      <div class="slimScrollDiv" style="position: relative; overflow: hidden; height: 100%;">
-                          <ul class="scroller" id="cart-items-list" style="height: 100%; overflow: auto;">
-                              <!-- Los items del carrito se añadirán aquí desde jQuery -->
-                          </ul>
-                      </div>
-                      <div class="text-right">
-                          <a href="{{ route('cart.showCart') }}" class="btn btn-info">Ver Pedido</a>
-                          <a id="complete-purchase" href="{{ route('product.checkout', ['iddomicilio' => 0]) }}" class="btn btn-primary">Finalizar compra</a>
-                      </div>
-                  </div>
-              </div>
 
         </div>
 

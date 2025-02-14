@@ -24,6 +24,33 @@
               <span class="h1 text-uppercase text-dark bg-light-mobile px-2">MERCADO</span>
               <span class="h1 text-uppercase text-light bg-primary px-2 ml-n1">+</span>
             </a>
+            <div class="d-inline-flex d-block d-lg-none">
+                <div class="top-cart-block ">
+                    <div class="top-cart-info" id="cart-info">
+                        <a href="javascript:void(0);" class="text-secundary top-cart-info-count" id="item-count">0
+                            productos</a>
+                        <a href="javascript:void(0);" class="top-cart-info-value" id="total-price">$0.00</a>
+                    </div>
+
+
+                    <div class="top-cart-content-wrapper" id="cart-content" style="display: none;">
+                        <div class="top-cart-content">
+                            <div class="slimScrollDiv" style="position: relative; overflow: hidden; height: 100%;">
+                                <ul class="scroller" id="cart-items-list" style="height: 100%; overflow: auto;">
+                                    <!-- Los items del carrito se añadirán aquí desde jQuery -->
+                                </ul>
+                            </div>
+                            <div class="text-right">
+                                <a href="{{ route('cart.showCart') }}" class="btn btn-info">Ver Pedido</a>
+                                <a id="complete-purchase" href="{{ route('product.checkout', ['iddomicilio' => 0]) }}"
+                                    class="btn btn-primary">Finalizar compra</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
             <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -37,7 +64,7 @@
                 <a href="/contact" class="nav-item nav-link">Contacto</a>
               </div>
 
-              <div class="top-cart-block  d-none">
+              <div class="top-cart-block d-none d-lg-block">
                 <div class="top-cart-info" id="cart-info">
                     <a href="javascript:void(0);" class="text-secundary top-cart-info-count" id="item-count">0 productos</a>
                     <a href="javascript:void(0);" class="top-cart-info-value" id="total-price">$0.00</a>
