@@ -18,6 +18,7 @@
           </nav>
         </div>
         <div class="col-lg-8">
+
           <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
             <a href="index.html" class="text-decoration-none d-block d-lg-none">
               <span class="h1 text-uppercase text-dark bg-light-mobile px-2">MERCADO</span>
@@ -26,6 +27,7 @@
             <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
               <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
               <div class="navbar-nav mr-auto py-0">
                 @if($specialOfferProduct) <a href="/specialoffer" class="nav-item nav-link active">Oferta del Día</a>@endif
@@ -35,7 +37,7 @@
                 <a href="/contact" class="nav-item nav-link">Contacto</a>
               </div>
 
-              <div class="top-cart-block">
+              <div class="top-cart-block  d-none">
                 <div class="top-cart-info" id="cart-info">
                     <a href="javascript:void(0);" class="text-secundary top-cart-info-count" id="item-count">0 productos</a>
                     <a href="javascript:void(0);" class="top-cart-info-value" id="total-price">$0.00</a>
