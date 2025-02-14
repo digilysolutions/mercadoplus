@@ -184,17 +184,17 @@
                             <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}" alt="" />
                         </div>
                         <div class="text-center py-4">
-                            <a class="h6 text-decoration-none text-truncate"
+                            <a class="h3 text-decoration-none text-truncate"
                                 href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">{{ $product['name'] }}
                             </a>
                             <div class="d-flex align-items-center justify-content-center mt-2">
                                 @if ($product['discounted_price'] != null && $product['discounted_price'] > 0)
-                                    <h5 class="product_{{ $product['id'] }}">${{ $product['discounted_price'] }}</h5>
-                                    <h6 id="" class="text-muted ml-2 product_{{ $product['id'] }}  sale-price"
+                                    <h4 class="product_{{ $product['id'] }}">${{ $product['discounted_price'] }}</h4>
+                                    <h4 id="" class="text-muted ml-2 product_{{ $product['id'] }}  sale-price"
                                         data-product-id={{ $product['id'] }}><del>${{ $product['sale_price'] ?? 0 }}</del>
-                                    </h6>
+                                    </h4>
                                 @else
-                                    <h5 class="product_{{ $product['id'] }}">${{ $product['sale_price'] ?? 0 }}</h5>
+                                    <h4 class="product_{{ $product['id'] }}">${{ $product['sale_price'] ?? 0 }}</h4>
                                 @endif
                             </div>
                             <div class="estrellas align-items-center justify-content-center " id="estrellas"
@@ -286,19 +286,19 @@
                                 <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}" alt="" />
                             </div>
                             <div class="text-center py-4">
-                                <a class="h6 text-decoration-none text-truncate"
+                                <a class="h3 text-decoration-none text-truncate"
                                     href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">{{ $product['name'] }}
                                 </a>
-                                <div class="d-flex align-items-center justify-content-center mt-2">
+                                <div class=" d-flex align-items-center justify-content-center mt-2">
                                     @if ($product['discounted_price'] != null && $product['discounted_price'] > 0)
-                                        <h5 class="product_{{ $product['id'] }}">${{ $product['discounted_price'] }}</h5>
-                                        <h6 id=""
+                                        <h4 class="product_{{ $product['id'] }}">${{ $product['discounted_price'] }}</h4>
+                                        <h4 id=""
                                             class="text-muted ml-2 product_{{ $product['id'] }}  sale-price"
                                             data-product-id={{ $product['id'] }}>
                                             <del>${{ $product['sale_price'] ?? 0 }}</del>
-                                        </h6>
+                                        </h4>
                                     @else
-                                        <h5 class="product_{{ $product['id'] }}">${{ $product['sale_price'] ?? 0 }}</h5>
+                                        <h4 class="product_{{ $product['id'] }}">${{ $product['sale_price'] ?? 0 }}</h4>
                                     @endif
                                 </div>
                                 <div class="estrellas align-items-center justify-content-center " id="estrellas"
