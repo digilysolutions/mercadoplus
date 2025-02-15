@@ -39,7 +39,7 @@ class homeController extends Controller
         $this->deliveryZones = $deliveryZones;
         $this->countryCurrencyService = $countryCurrencyService;
         if (!Session::has('currency')) {
-            Session::put('currency', 'MN'); // Establece un valor predeterminado
+            Session::put('currency', 'USD'); // Establece un valor predeterminado
         }
         $this->filterProducts = collect();
     }
