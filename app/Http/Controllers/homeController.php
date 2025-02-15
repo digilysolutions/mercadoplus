@@ -316,7 +316,8 @@ class homeController extends Controller
         $message .= "-----------------------------------\n"; // Carácter de separación para la tabla
 
         foreach ($products as $product) {
-            $message .= sprintf("%8s | %-30s | $%s\n",
+            $message .= sprintf(
+                "%8s | %-30s | $%s\n",
                 $product['quantity'], // Cantidad
                 substr($product['name'], 0, 30), // Nombre del producto (truncate si es muy largo)
                 number_format($product['sale_price'], 2) // Precio con dos decimales
@@ -406,12 +407,11 @@ class homeController extends Controller
     }
     public function shop(Request $request)
     {
+
         $countryCurrencies = $this->countryCurrencyService->getCountryCurrency();
         $countryCurrencies = $countryCurrencies['data'];
         $currency = $this->getCurrency();
-        $products = $this->productsService->getProducts();
-        $this->filterProducts = collect($products['data']);
-        $productsCollection = collect($products['data']);
+
         $categories = $this->categoryService->getCategories();
         $categories  =  collect($categories["data"]);
 
@@ -419,6 +419,14 @@ class homeController extends Controller
         $categories = $categories->filter(function ($category) {
             return count($category['products']) > 1; // Suponiendo que tienes una relación "products"
         });
+
+      /*  $products = $this->productsService->getProducts();
+        $this->filterProducts = collect($products['data']);
+        $productsCollection = collect($products['data']);*/
+
+
+        $productsCollection=$this->getFilteredProducts( $request);
+
 
         // Definir la cantidad de productos por página
         $perPage = 6; // Cambia esto al número que quieras por página
@@ -435,6 +443,14 @@ class homeController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
         return view('app.shop', compact('countryCurrencies', 'currency', 'productsPaginator', 'categories'));
+    }
+    public function productToCategory(Request $request)
+    {
+        if ($request->has('category_ids')) {
+
+            return view('app.shop');
+        }
+
     }
     public function getFilteredProducts(Request $request)
     {
@@ -476,9 +492,17 @@ class homeController extends Controller
             });
         }
 
-        // Retornar los productos filtrados
-        return response()->json($this->filterProducts);
+        // Filtrado por categoría
+        if ($request->has('category_ids')) {
+            $categoryIds = $request->input('category_ids');
+            $this->filterProducts = $this->filterProducts->filter(function ($product) use ($categoryIds) {
+                return array_intersect($categoryIds, array_column($product['categories'], 'id')) !== [];
+            });
+        }
 
-        return $this->filterProducts;
+        // Retornar los productos filtrados
+        //return response()->json($this->filterProducts);
+
+       return $this->filterProducts;
     }
 }

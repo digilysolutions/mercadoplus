@@ -235,5 +235,4 @@ Route::get('/customer-service', [homeController::class, 'customerservice']);
 Route::get('/contact', [homeController::class, 'contact']);
 Route::post('/sendmessage', [homeController::class, 'sendMessageContact'])->name('contact.sendmessage');
 Route::get('/specialoffer', [homeController::class, 'specialOffer']);
-Route::get('/shop', [homeController::class, 'shop']);
-Route::get('/shop', [homeController::class, 'shop']);
+Route::get('/shop', [homeController::class, 'shop'])->name('product.shop');

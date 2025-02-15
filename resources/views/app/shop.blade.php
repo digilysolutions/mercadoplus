@@ -26,13 +26,15 @@
                         Categoría</span></h5>
                 <div class="bg-light p-4 mb-30">
                     <form>
-@foreach ($categories as $category )
-<div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-    <input type="checkbox" class="custom-control-input" id="{{ $category['id']}}" name="{{ $category['id']}}">
-    <label class="custom-control-label" for="color-1">{{ $category['name']}}</label>
-    <span class="badge border font-weight-normal">{{count($category['products'])}}</span>
-</div>
-@endforeach
+                        @foreach ($categories as $category)
+                            <div
+                                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                                <input type="checkbox" value="{{ $category['id'] }}" class="custom-control-input" id="category_{{ $category['id'] }}"
+                                    name="category_ids[]">
+                                <label class="custom-control-label" for="color-1">{{ $category['name'] }}</label>
+                                <span class="badge border font-weight-normal">{{ count($category['products']) }}</span>
+                            </div>
+                        @endforeach
 
 
                     </form>

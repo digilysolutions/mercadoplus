@@ -156,7 +156,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
                     <div class="product-item bg-light mb-4">
                         <div class="product-img position-relative overflow-hidden">
-                            <a class="text-orange-mobile" href="    /shop"><img
+                            <a class="text-orange-mobile" href="{{ route('product.shop', ['category_ids[]' => $category['id']]) }}"><img
                                     class="img-fluid w-100" src="{{ $category['path_image'] }}" alt="" /> </a>
                         </div>
                         <div class="text-center py-3"> </div>
