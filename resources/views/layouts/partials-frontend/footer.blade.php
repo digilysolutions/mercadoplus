@@ -128,6 +128,7 @@
             }
         });
 
+
         // Cierra el carrito si se hace clic en cualquier parte de la página fuera del carrito
         $(document).click(function() {
             if (cartContent.is(':visible')) {

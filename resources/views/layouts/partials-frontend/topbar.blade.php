@@ -16,23 +16,23 @@
               type="button"
               class="btn btn-sm btn-light dropdown-toggle"
               data-toggle="dropdown">
-              <i class="fas fa-user icon-header fa-1x"></i>
+              <i class="fas fa-user icon-header"></i>
 
             </button>
 
 
             <div class="dropdown-menu dropdown-menu-right">
-              <button class="h5 dropdown-item" type="button">Entrar</button>
-              <button class="h5 dropdown-item" type="button">Registrarse</button>
+              <button class="dropdown-item" type="button">Entrar</button>
+              <button class="dropdown-item" type="button">Registrarse</button>
             </div>
           </div>
 
           <div class="btn-group mx-2">
             <div class="btn-group mx-2">
-          <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown"><i class="fas fa-money-bill icon-header fa-1x"></i> <strong class="h5 selectedCurrency">{{ $currency }}</strong></button>
+          <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown"><i class="fas fa-money-bill icon-header"></i> <strong class="selectedCurrency">{{ $currency }}</strong></button>
           <div class="dropdown-menu dropdown-menu-right">
             @foreach ($countryCurrencies as $countryCurrency)
-              <button class="dropdown-item" type="button" onclick="changeCurrency('{{ $countryCurrency['currency']['code'] }}')"><strong class="h5">{{ $countryCurrency['currency']['code'] }}</strong></button>
+              <button class="dropdown-item" type="button" onclick="changeCurrency('{{ $countryCurrency['currency']['code'] }}')"><strong>{{ $countryCurrency['currency']['code'] }}</strong></button>
               @endforeach
       </div>
 
@@ -42,11 +42,7 @@
 
           </div>
         </div>
-        <div class="col-lg-12 d-block d-lg-none  text-center">
 
-
-
-        </div>
 
       </div>
     </div>
