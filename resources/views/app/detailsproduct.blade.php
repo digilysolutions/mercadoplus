@@ -240,7 +240,9 @@
                     @foreach ($randomProducts as $product)
                         <div class="product-item bg-light">
                             <div class="product-image position-relative overflow-hidden">
+                                <a href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">
                                 <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}" alt="" />
+                                </a>
                             </div>
                             <div class="text-center py-4">
                                 <a class="h6 text-decoration-none text-truncate"

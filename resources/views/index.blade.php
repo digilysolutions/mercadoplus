@@ -156,7 +156,8 @@
                 <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
                     <div class="product-item bg-light mb-4">
                         <div class="product-img position-relative overflow-hidden">
-                            <a class="text-orange-mobile" href="{{ route('product.shop', ['category_ids[]' => $category['id']]) }}"><img
+                            <a class="text-orange-mobile"
+                                href="{{ route('product.shop', ['category_ids[]' => $category['id']]) }}"><img
                                     class="img-fluid w-100" src="{{ $category['path_image'] }}" alt="" /> </a>
                         </div>
                         <div class="text-center py-3"> </div>
@@ -181,7 +182,9 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
                     <div class="product-item bg-light mb-4">
                         <div class="product-image position-relative overflow-hidden">
-                            <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}" alt="" />
+                            <a href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">
+                                <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}" alt="" />
+                            </a>
                         </div>
                         <div class="text-center py-4">
                             <a class="h4 text-decoration-none text-truncate"
@@ -218,7 +221,8 @@
                                             @foreach ($countryCurrencies as $countryCurrency)
                                                 <button class="dropdown-item" type="button"
                                                     onclick="changeCurrency('{{ $countryCurrency['currency']['code'] }}', {{ $product['id'] }})">
-                                                    <strong class="h4">{{ $countryCurrency['currency']['code'] }}</strong>
+                                                    <strong
+                                                        class="h4">{{ $countryCurrency['currency']['code'] }}</strong>
                                                 </button>
                                             @endforeach
                                         </div>
@@ -283,7 +287,10 @@
                     <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
                         <div class="product-item bg-light mb-4">
                             <div class="product-image position-relative overflow-hidden">
-                                <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}" alt="" />
+                                <a href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">
+                                    <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}"
+                                        alt="" />
+                                </a>
                             </div>
                             <div class="text-center py-4">
                                 <a class="h4 text-decoration-none text-truncate"
@@ -322,14 +329,16 @@
                                                 @foreach ($countryCurrencies as $countryCurrency)
                                                     <button class="dropdown-item" type="button"
                                                         onclick="changeCurrency('{{ $countryCurrency['currency']['code'] }}', {{ $product['id'] }})">
-                                                        <strong class="h4">{{ $countryCurrency['currency']['code'] }}</strong>
+                                                        <strong
+                                                            class="h4">{{ $countryCurrency['currency']['code'] }}</strong>
                                                     </button>
                                                 @endforeach
                                             </div>
                                         </div>
                                         <button type="button" class="btn btn-outline-dark addcart"
                                             data-id={{ $product['id'] }} data-toggle="tooltip" data-placement="bottom"
-                                            data-original-title="Añadir al Carrito"><i class="fa fa-shopping-cart fa-2x"></i>
+                                            data-original-title="Añadir al Carrito"><i
+                                                class="fa fa-shopping-cart fa-2x"></i>
                                         </button>
                                         <a href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}"
                                             id="more_details" class="btn btn-outline-dark ml-2" data-toggle="tooltip"
