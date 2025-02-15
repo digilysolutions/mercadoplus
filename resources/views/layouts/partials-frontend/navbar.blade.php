@@ -34,7 +34,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                <div class="h5 collapse navbar-collapse justify-content-between" id="navbarCollapse">
                     <div class="navbar-nav mr-auto py-0">
                         @if ($specialOfferProduct)
                             <a href="/specialoffer" class="nav-item nav-link active">Oferta del Día</a>
