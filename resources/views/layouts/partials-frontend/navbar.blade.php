@@ -22,7 +22,7 @@
         <div class="col-lg-8">
 
             <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
-                <a href="index.html" class="text-decoration-none d-block d-lg-none">
+                <a href="{{/}}" class="text-decoration-none d-block d-lg-none">
                     <span class="h1 text-uppercase text-dark bg-light-mobile px-2">MERCADO</span>
                     <span class="h1 text-uppercase text-light bg-primary px-2 ml-n1">+</span>
                 </a>
@@ -74,7 +74,7 @@
                                 productos</a>
                             <a href="javascript:void(0);" class="top-cart-info-value" id="total-price">$0.00</a>
                         </div>
-                        <i class="fa fa-shopping-cart mt-3"></i>
+                        <i class="fa fa-shopping-cart mt-3 icono-shopping-cart"></i>
 
                         <div class="top-cart-content-wrapper" id="cart-content" style="display: none;">
                             <div class="top-cart-content">
