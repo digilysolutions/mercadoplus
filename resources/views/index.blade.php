@@ -338,7 +338,7 @@
                                         <button type="button" class="btn btn-outline-dark addcart"
                                             data-id={{ $product['id'] }} data-toggle="tooltip" data-placement="bottom"
                                             data-original-title="Añadir al Carrito"><i
-                                                class="fa fa-shopping-cart fa-2x"></i>
+                                                class="fa fa-shopping-cart fa-2x "></i>
                                         </button>
                                         <a href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}"
                                             id="more_details" class="btn btn-outline-dark ml-2" data-toggle="tooltip"

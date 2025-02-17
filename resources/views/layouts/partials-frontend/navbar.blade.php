@@ -27,8 +27,8 @@
                     <span class="h1 text-uppercase text-light bg-primary px-2 ml-n1">+</span>
                 </a>
                 <div class="d-inline-flex align-items-center d-block d-lg-none ">
-                    <div class="top-cart-block">
-                        <div class="top-cart-info cart-info">
+                    <div class="top-cart-block-phone">
+                        <div class="top-cart-info cart-info-phone">
                             <a href="javascript:void(0);" class="text-secundary top-cart-info-count" id="item-count-phone">0
                                 productos</a>
                             <a href="javascript:void(0);" class="top-cart-info-value" id="total-price-phone">$0.00</a>
@@ -36,7 +36,7 @@
 
 
                         <div class="top-cart-content-wrapper" id="cart-content-phone" style="display: none;">
-                            <div class="top-cart-content">
+                            <div class="top-cart-content-phone">
                                 <div class="slimScrollDiv" style="position: relative; overflow: hidden; height: 100%;">
                                     <ul class="scroller" id="cart-items-list-phone" style="height: 100%; overflow: auto;">
                                         <!-- Los items del carrito se añadirán aquí desde jQuery -->
