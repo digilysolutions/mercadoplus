@@ -33,8 +33,6 @@
                                 productos</a>
                             <a href="javascript:void(0);" class="top-cart-info-value" id="total-price-phone">$0.00</a>
                         </div>
-
-
                         <div class="top-cart-content-wrapper" id="cart-content-phone" style="display: none;">
                             <div class="top-cart-content-phone">
                                 <div class="slimScrollDiv" style="position: relative; overflow: hidden; height: 100%;">

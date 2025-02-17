@@ -54,7 +54,9 @@
                         <div class="col-lg-6 col-md-6 col-sm-6 pb-1">
                             <div class="product-item bg-light mb-4">
                                 <div class="product-image position-relative overflow-hidden">
+                                    <a  href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">
                                     <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}" alt="" />
+                                    </a>
                                 </div>
                                 <div class="text-center py-4">
                                     <a class="h6 text-decoration-none text-truncate"
