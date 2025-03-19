@@ -2,121 +2,312 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\BusinessService;
-use App\Services\LocationService;
-use App\Services\PersonService;
+use App\Models\Person;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use App\Http\Requests\PersonRequest;
+use App\Models\Business;
+use App\Models\Contact;
+use App\Models\Employee;
+use App\Models\Location;
+use App\Models\User;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class PersonController extends Controller
 {
-    protected $personService;
-    protected $locationService;
-    protected $businessService;
-    public function __construct(PersonService $personService, LocationService $locationService, BusinessService $businessService)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): View
     {
-        $this->personService = $personService;
-        $this->locationService = $locationService;
-        $this->businessService = $businessService;
-    }
-    public function index()
-    {
-        $data = $this->personService->getPersons();
-        $persons = $data["data"];
-        return view('admin.persons.index', compact('persons'));
-    }
-    public function create()
-    {
-        //Ubicacion
-        $locations = $this->locationService->getLocations();
-        $locations  = $locations["data"];
-        $businesses = $this->businessService->getBusiness();
-        $businesses  = $businesses["data"];
+        $people = Person::all();
 
-        return view('admin.persons.create', compact('locations', 'businesses')); // Muestra la vista 'people.create'
+        return view('person.index', compact('people'));
     }
-    public function store(Request $request)
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
     {
-        $data = $request->only([
-            'first_name',
-            'middle_name',
-            'last_name',
-            'gender',
-            'marital_status',
-            'blood_group',
-            'type',
-            'mobile',
-            'email',
-            'alternate_number',
-            'phone',
-            'family_number',
-            'location_name',
-            'city',
-            'address',
-            'zip_code',
-            'description',
-            'landmark',
-            'business_id',
-            'person_statuses_message',
-            'shippingAddress_name',
-            'shippingAddress_city',
-            'shippingAddress_address',
-            'shippingAddress_zip_code',
-            'shippingAddress_description',
-            'shippingAddress_landmark',
-            'path_image',
-            'business_employee_id',
-            'email_business',
-            'jobTitle',
-            'department',
-            'municipality_id',
-            'role',
-            'salary'
-        ]);
-       
+        $person = new Person();
+        $locations = Location::allActivated();
+        $businesses = Business::allActivated();
+        $roles = Role::all();
 
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
-        $data['municipality_id'] =1;
+        return view('person.create', compact('person', 'locations', 'businesses', 'roles'));
+    }
 
-        if($request->has('path_image'))
-        {
-            $request->validate([
-                'path_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp' // tamaño máximo 2MB
-            ]);    
-            // Usar el helper para subir la imagen y obtener la ruta
-            $imagePath = upload_image($request->file('path_image'));
-            $data['path_image'] =  $imagePath;
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(PersonRequest $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+            // Recopilar detalles de la persona
+            $detailsPerson = [
+                'first_name' => $request->first_name,
+                'middle_name' => $request->middle_name,
+                'last_name' => $request->last_name,
+                'gender' => $request->gender,
+                'marital_status' => $request->marital_status,
+                'blood_group' => $request->blood_group,
+                'language' => $request->language,
+                'is_activated' => $request->is_activated,
+                'person_statuses_id' => $request->person_statuses_id ?: 1, // Default to 1 if empty
+            ];
+            $detailsEmployee = [
+                'business_employee_id' => $request->business_employee_id,
+                'email_business' => $request->email_business,
+                'jobTitle' => $request->jobTitle,
+                'department' => $request->department,
+                'role' => $request->employee_role,
+                'salary' => $request->salary,
+                'path_image' => $request->path_image,
+
+            ];
+
+            $detailsUser = [
+                'name' => $request->username,
+                'email' => $request->useremail,
+                'password' => $request->password,
+                'roleid' => $request->roleid
+            ];
+
+            // Recopilar detalles de contacto
+            $detailsContact = [
+                'email' => $request->email,
+                'family_number' => $request->family_number,
+                'alternate_number' => $request->alternate_number,
+                'mobile' => $request->mobile,
+                'phone' => $request->phone,
+                'location_id' => null,
+            ];
+            $detailsContact['email'] = $request->validate([
+                'email' => 'required|email|unique:contacts,email'
+            ]);
+
+            // Recopilar detalles de la ubicación
+            $detailsLocation = [
+                'name' => $request->location_name,
+                'description' => $request->description,
+                'zip_code' => $request->zip_code,
+                'city' => $request->city,
+                'address' => $request->address,
+                'municipality_id' => $request->municipality_id,
+                'landmark' => $request->landmark,
+            ];
+
+
+            $role = Role::find($detailsUser['roleid']);
+            $detailsUser['role'] = $role->name;
+
+            $user = User::create($detailsUser);
+            // Verificar y crear ubicación
+            $location = null;
+            if ($request->has('location_name')) {
+                $location = Location::where('name', $request->location_name)
+                    ->where('zip_code', $request->zip_code)
+                    ->where('address', $request->address)
+                    ->where('municipality_id', $request->municipality_id)
+                    ->first(); // Ahora usamos first() para obtener un solo registro.
+
+                if (!$location) {
+                    $location = Location::create($detailsLocation);
+                }
+            }
+
+            // Asignar ID de ubicación al contacto si se creó o encontró
+            if ($location) {
+                $detailsContact['location_id'] = $location->id;
+            }
+
+            // Procesar contacto
+            $contact = Contact::where('mobile', $request->mobile)->first();
+            if (!$contact) {
+                $contact = Contact::create($detailsContact);
+            }
+            $detailsPerson['contact_id'] = $contact->id;
+
+            $detailsPerson['user_id'] = $user->id;
+            $detailsPerson['is_activated'] = $request->input('is_activated') === 'on' ? 1 : 0;
+            // Crear persona
+            $person = Person::create($detailsPerson);
+
+            // Procesar según el tipo
+            switch ($request->type) {
+                case 'Cliente':
+                    $this->handleCustomer($request, $person, $contact);
+                    break;
+                case 'CEO':
+                    $this->handleCEO($request, $person);
+                    break;
+                case 'Empleado':
+                    $request->validate([
+                        'path_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048' // Tamaño máximo 2MB
+                    ]);
+
+                    // Manejo de la imagen
+                    if ($request->hasFile('path_image')) {
+                        $detailsEmployee['path_image'] = upload_image($request->file('path_image'));
+                    }
+                    $this->handleEmployee($detailsEmployee, $person);
+                    break;
+            }
+
+            DB::commit();
+            return Redirect::route('people.index')->with('success', 'Persona creada exitosamente.');
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return Redirect::route('people.create')->withErrors([
+                'error' => 'No se ha podido añadir la persona. Por favor, inténtelo de nuevo más tarde.' . "-------" . $ex
+            ]);
         }
-     
-        $this->personService->createPerson($data);
-        return $this->index();
     }
 
-    public function show($id)
+    private function handleCustomer($request, $person, $contact)
     {
-        // Obtiene la etiqueta por ID
-        $tag = $this->personService->showPerson($id);
+        $billingAddressId = null;
+        $shippingAddressId = null;
 
-
-        // Devuelve la etiqueta como respuesta JSON
-        return response()->json($tag);
+        if (isset($request->billingAddress) && isset($request->shippingAddress)) {
+            // Implementar la lógica de manejo para 'Cliente'
+            $billingAddressId = $this->processAddress($request->billingAddress, $contact);
+            $shippingAddressId = $this->processAddress($request->shippingAddress, $contact);
+        }
+        // Crear relación con cliente
+        $person->customer()->create([
+            'billingAddress_id' => $billingAddressId,
+            'shippingAddress_id' => $shippingAddressId,
+        ]);
     }
-    public function delete($id)
-    {        // Obtiene la ETQUETA por ID
-        $tag = $this->personService->deletePerson($id);
-        // Devuelve la etiqueta como respuesta JSON
-        return response()->json($tag);
-    }
 
-    public function update(Request $request, $id)
+    private function handleCEO($request, $person)
     {
-        // Obtener solo los datos relevantes del request
-        $data = $request->only(['name',  'is_activated']);
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
-        $tag = $this->personService->updatePerson($id, $data);
-        // Devuelve la etqiueta actualizada como respuesta JSON o redirige a la lista        
-        return  $this->index();
+        // Check if the business_employee_id is present in the request
+        if ($request->has('business_employee_id')) {
+            // Fetch the business using the provided business_employee_id
+            $business = Business::find($request->business_employee_id);
+
+            // Check if the business exists
+            if (!$business) {
+                return Redirect::route('people.create')->withErrors([
+                    'error' => 'No se ha podido añadir la persona. El negocio escogido no existe.'
+                ]);
+            }
+
+            // Check if the business already has an owner
+            if ($business->owner) {
+                return Redirect::route('people.create')->withErrors([
+                    'error' => 'No se ha podido añadir la persona. El negocio escogido tiene dueño.'
+                ]);
+            }
+        }
+
+        // Prepare the details for the owner
+        $detailsCEO['is_activated'] = true;
+        if ($request->has('person_statuses_message')) {
+            $detailsCEO['person_statuses_message'] = $request->person_statuses_message;
+        }
+
+        // Create the owner linking it to the person
+        $owner = $person->owner()->create($detailsCEO);
+
+        // If a business was found, link the newly created owner to the business
+        if (isset($business)) {
+            $business->owner_id = $owner->id; // Set the owner_id field of the business
+            $business->save(); // Save the changes to the business
+        }
+
+        // Optionally, you might want to redirect or return a success message here
+        return Redirect::route('people.index')->with('message', 'El dueño ha sido creado y vinculado al negocio exitosamente.');
+    }
+    private function handleEmployee($detailsEmployee, $person)
+    {
+        $employee = Employee::create(
+            [
+                'person_id' => $person->id,
+                'is_activated' => true,
+                'path_image' => $detailsEmployee['path_image']
+            ]
+        );
+        $business = Business::findOrFail($detailsEmployee['business_employee_id']);
+
+        if ($detailsEmployee['salary'] == "" || $detailsEmployee['salary'] == null)
+            $detailsEmployee['salary'] = 0;
+        $business->employees()->attach(
+
+            $employee->id,
+            [
+
+                'is_activated' => true,
+                'hireDate' => now(),
+                'email_business' => $detailsEmployee['email_business'],
+                'jobTitle' => $detailsEmployee['jobTitle'],
+                'department' => $detailsEmployee['department'],
+                'role' => $detailsEmployee['role'],
+                'salary' => $detailsEmployee['salary']
+            ]
+        );
+    }
+
+    private function processAddress($addressData, $contact)
+    {
+        // Lógica para procesar direcciones y crear ubicaciones.
+        if ($addressData['name'] && $addressData['zip_code']) {
+            // Busca o crea la dirección.
+            $location = Location::firstOrCreate([
+                'name' => $addressData['name'],
+                'zip_code' => $addressData['zip_code'],
+            ], $addressData);
+
+            return $location->id;
+        }
+        return null;
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show($id): View
+    {
+        $person = Person::find($id);
+
+        return view('person.show', compact('person'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id): View
+    {
+        $person = Person::find($id);
+
+        return view('person.edit', compact('person'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(PersonRequest $request, Person $person): RedirectResponse
+    {
+        $data = $request->all();
+        $data["is_activated"] =  $request->input('is_activated') === 'on' ? 1 : 0;
+        $person->update($data);
+
+        return Redirect::route('people.index')
+            ->with('success', 'Person ' . __('validation.attributes.successfully_updated'));
+    }
+
+    public function destroy($id): RedirectResponse
+    {
+        Person::find($id)->delete();
+
+        return Redirect::route('people.index')
+            ->with('success', 'Person ' .  __('validation.attributes.successfully_removed'));
     }
 }

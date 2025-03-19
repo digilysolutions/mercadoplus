@@ -2,81 +2,86 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\CurrencyService;
+use App\Models\Currency;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\CurrencyRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class CurrencyController extends Controller
 {
-
-    protected $currencyService;
-
-    public function __construct(CurrencyService $currencyService)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): View
     {
-        $this->currencyService = $currencyService;
+        $currencies = Currency::all();
+
+        return view('currency.index', compact('currencies'));
     }
-    public function index()
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
     {
-        return "index";
-        $currencies = $this->currencyService->getCurrencies();
-        $currencies  = $currencies["data"];
-        return view('admin.currencies.index', compact('currencies'));
+        $currency = new Currency();
+
+        return view('currency.create', compact('currency'));
     }
 
-    public function store(Request $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(CurrencyRequest $request): RedirectResponse
     {
-        return "store";
-        /* The code snippet you provided is from a PHP Laravel controller `CategoryController`. Let's
-       break down the code: */
-        $data = $request->only([ 'country',
-        'currency',
-        'is_activated',
-        'path_flag',
-        'code',
-        'symbol',
-        'thousand_separator',
-        'decimal_separator']);
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
-        $this->currencyService->createCurrency($data);
-        return $this->index();
+         $data =$request->validated();
+        $data['is_is_activated'] = $request->input('is_is_activated') === 'on' ? 1 : 0;
+        Currency::create($data);
+
+        return Redirect::route('currencies.index')
+            ->with('success', __('Currency') .__('validation.attributes.successfully_created'));
     }
 
-    public function show($id)
-    {  return "show";
-        // Obtiene la moneda por ID
-        $currency = $this->currencyService->showCurrency($id);
-        // Devuelve la moneda como respuesta JSON
-        return response()->json($currency);
-    }
-    public function delete($id)
+    /**
+     * Display the specified resource.
+     */
+    public function show($id): View
     {
-          return "delete";
-        // Obtiene la moneda por ID
-        $currency = $this->currencyService->deleteCurrency($id);
-        // Devuelve moneda como respuesta JSON
-        return response()->json($currency);
+        $currency = Currency::find($id);
+
+        return view('currency.show', compact('currency'));
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id): View
     {
-        return "update";
-        // Obtener solo los datos relevantes del request
-        $data = $request->only([ 'country',
-        'currency',
-        'is_activated',
-        'path_flag',
-        'code',
-        'symbol',
-        'thousand_separator',
-        'decimal_separator']);
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
-        $this->currencyService->updateCurrency($id, $data);
-        // Devuelve moneda actualizada como respuesta JSON o redirige a la lista
+        $currency = Currency::find($id);
 
-        return  $this->index();
+        return view('currency.edit', compact('currency'));
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(CurrencyRequest $request, Currency $currency): RedirectResponse
+    {
+        $data =$request->all();
+        $data["is_activated"] =  $request->input('is_activated') === 'on' ? 1 : 0;
+        $currency->update($data);
 
-    
+        return Redirect::route('currencies.index')
+            ->with('success', __('Currency').__('validation.attributes.successfully_updated'));
+    }
+
+    public function destroy($id): RedirectResponse
+    {
+        Currency::find($id)->delete();
+
+        return Redirect::route('currencies.index')
+            ->with('success', __('Currency').  __('validation.attributes.successfully_removed'));
+    }
 }

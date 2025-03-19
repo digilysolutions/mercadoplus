@@ -2,55 +2,86 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\RatingService;
+use App\Models\Rating;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\RatingRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class RatingController extends Controller
 {
-    protected $ratingService;
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): View
+    {
+        $ratings = Rating::all();
 
-    public function __construct(RatingService $ratingService)
-    {
-        $this->ratingService = $ratingService;
-    }
-    public function index()
-    {
-        $data = $this->ratingService->getRatings();
-        $ratings = $data["data"];
-        return view('admin.ratings.index', compact('ratings'));
-    }
-    public function store(Request $request)
-    {
-        $data = $request->only(['name', 'is_activated']);
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
-        $this->ratingService->createRating($data);
-        return $this->index();
+        return view('rating.index', compact('ratings'));
     }
 
-    public function show($id)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
     {
-        // Obtiene la etiqueta por ID
-        $rating = $this->ratingService->showRating($id);
-        // Devuelve la puntuacion como respuesta JSON
-        return response()->json($rating);
-    }
-    public function delete($id)
-    {        // Obtiene la puntacion por ID
-        $rating = $this->ratingService->deleteRating($id);
-        // Devuelve la puntuacion como respuesta JSON
-        return response()->json($rating);
+        $rating = new Rating();
+
+        return view('rating.create', compact('rating'));
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(RatingRequest $request): RedirectResponse
     {
-        // Obtener solo los datos relevantes del request
-        $data = $request->only(['name',  'is_activated']);
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
+         $data =$request->validated();
+        $data['is_is_activated'] = $request->input('is_is_activated') === 'on' ? 1 : 0;
+        Rating::create($data);
 
-        $tag = $this->ratingService->updateRating($id, $data);
-        // Devuelve la etqiueta actualizada como respuesta JSON o redirige a la lista        
-        return  $this->index();
+        return Redirect::route('ratings.index')
+            ->with('success', 'Rating '.__('validation.attributes.successfully_created'));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show($id): View
+    {
+        $rating = Rating::find($id);
+
+        return view('rating.show', compact('rating'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id): View
+    {
+        $rating = Rating::find($id);
+
+        return view('rating.edit', compact('rating'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(RatingRequest $request, Rating $rating): RedirectResponse
+    {
+        $data =$request->all();
+        $data["is_activated"] =  $request->input('is_activated') === 'on' ? 1 : 0;
+        $rating->update($data);
+
+        return Redirect::route('ratings.index')
+            ->with('success', 'Rating '.__('validation.attributes.successfully_updated'));
+    }
+
+    public function destroy($id): RedirectResponse
+    {
+        Rating::find($id)->delete();
+
+        return Redirect::route('ratings.index')
+            ->with('success', 'Rating '.  __('validation.attributes.successfully_removed'));
     }
 }

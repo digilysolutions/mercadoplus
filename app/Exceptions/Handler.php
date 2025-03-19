@@ -2,35 +2,20 @@
 
 namespace App\Exceptions;
 
-use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
-use Illuminate\Database\DatabaseException;
-use Illuminate\Database\ConnectionException;
-use Illuminate\Database\QueryException;
-use Illuminate\Http\Client\ConnectionException as ClientConnectionException;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
-    /**
-     * The list of the inputs that are never flashed to the session on validation exceptions.
-     *
-     * @var array<int, string>
-     */
-    protected $dontFlash = [
-        'current_password',
-        'password',
-        'password_confirmation',
-    ];
+    // Aquí puedes agregar otras funciones según necesites
 
-    /**
-     * Register the exception handling callbacks for the application.
-     */
-    public function register(): void
+    public function render($request, Throwable $exception)
     {
-        $this->reportable(function (Throwable $e) {
-            //
-        });
+        if ($exception instanceof NotFoundHttpException) {
+            return redirect('/admin/login')->with('error', 'Página no encontrada.');
+        }
+
+        return parent::render($request, $exception);
     }
 }

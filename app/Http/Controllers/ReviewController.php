@@ -2,75 +2,86 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ReviewService;
+use App\Models\Review;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use App\Http\Requests\ReviewRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class ReviewController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): View
+    {
+        $reviews = Review::all();
 
-    protected $reviewService;
-
-    public function __construct(ReviewService $reviewService)
-    {
-        $this->reviewService = $reviewService;
-    }
-    public function index()
-    {
-        $reviews = $this->reviewService->getReviews();
-        $reviews  = $reviews["data"];
-        return view('admin.reviews.index', compact('reviews'));
-    }
-    public function store(Request $request)
-    {
-        /* The code snippet you provided is from a PHP Laravel controller `CategoryController`. Let's
-       break down the code: */
-        $data = $request->only([
-            'name', 
-            'business_id',
-            'product_id',
-            'comment',
-            'date',
-            'writer_id',
-            'is_activated'
-        ]);
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
-        $review = $this->reviewService->createReview($data);
-        return $this->index();
+        return view('review.index', compact('reviews'));
     }
 
-    public function show($id)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
     {
-        // Obtiene la reseña por ID
-        $review = $this->reviewService->showReview($id);
-        // Devuelve la reseña como respuesta JSON
-        return response()->json($review);
-    }
-    public function delete($id)
-    {
-        // Obtiene la reseña por ID
-        $review = $this->reviewService->deleteReview($id);
-        // Devuelve la reseña como respuesta JSON
-        return response()->json($review);
+        $review = new Review();
+
+        return view('review.create', compact('review'));
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(ReviewRequest $request): RedirectResponse
     {
-        // Obtener solo los datos relevantes del request
-        $data = $request->only(['name', 
-            'business_id',
-            'product_id',
-            'comment',
-            'date',
-            'writer_id',
-            'is_activated']);
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
+         $data =$request->validated();
+        $data['is_is_activated'] = $request->input('is_is_activated') === 'on' ? 1 : 0;
+        Review::create($data);
 
-        $review = $this->reviewService->updateReview($id, $data);
-        // Devuelve la reseña actualizada como respuesta JSON o redirige a la lista
+        return Redirect::route('reviews.index')
+            ->with('success', 'Review '.__('validation.attributes.successfully_created'));
+    }
 
-        return  $this->index();
+    /**
+     * Display the specified resource.
+     */
+    public function show($id): View
+    {
+        $review = Review::find($id);
+
+        return view('review.show', compact('review'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id): View
+    {
+        $review = Review::find($id);
+
+        return view('review.edit', compact('review'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(ReviewRequest $request, Review $review): RedirectResponse
+    {
+        $data =$request->all();
+        $data["is_activated"] =  $request->input('is_activated') === 'on' ? 1 : 0;
+        $review->update($data);
+
+        return Redirect::route('reviews.index')
+            ->with('success', 'Review '.__('validation.attributes.successfully_updated'));
+    }
+
+    public function destroy($id): RedirectResponse
+    {
+        Review::find($id)->delete();
+
+        return Redirect::route('reviews.index')
+            ->with('success', 'Review '.  __('validation.attributes.successfully_removed'));
     }
 }

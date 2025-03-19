@@ -2,64 +2,86 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\UnitBaseService;
+use App\Models\UnitBase;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use App\Http\Requests\UnitBaseRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class UnitBaseController extends Controller
 {
-
-    protected $unitBaseService;
-
-    public function __construct(UnitBaseService $unitBaseService)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): View
     {
-        $this->unitBaseService = $unitBaseService;
-    }
-    public function index()
-    {
-        $units = $this->unitBaseService->getUnitsBase();
-        $units  = $units["data"];
-        return view('admin.unitBase.index', compact('units'));
+        $unitBases = UnitBase::all();
+
+        return view('unit-base.index', compact('unitBases'));
     }
 
-
-
-    public function store(Request $request)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
     {
-        /* The code snippet you provided is from a PHP Laravel controller `CategoryController`. Let's
-       break down the code: */
-        $data = $request->only(['name', 'is_activated']);
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
-        $unitBase = $this->unitBaseService->createUnitBase($data);
-        return $this->index();
+        $unitBase = new UnitBase();
+
+        return view('unit-base.create', compact('unitBase'));
     }
 
-    public function show($id)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(UnitBaseRequest $request): RedirectResponse
     {
-        // Obtiene la unidad base por ID
-        $unitBase = $this->unitBaseService->showUnitBase($id);
-        // Devuelve la unidad base como respuesta JSON
-        return response()->json($unitBase);
-    }
-    public function delete($id)
-    {
-        // Obtiene la unidad base por ID
-        $unitBase = $this->unitBaseService->deleteUnitBase($id);
-        // Devuelve la unidad base como respuesta JSON
-        return response()->json($unitBase);
+         $data =$request->validated();
+        $data['is_is_activated'] = $request->input('is_is_activated') === 'on' ? 1 : 0;
+        UnitBase::create($data);
+
+        return Redirect::route('unit-bases.index')
+            ->with('success', __('Unit Base').__('validation.attributes.successfully_created'));
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Display the specified resource.
+     */
+    public function show($id): View
     {
-        // Obtener solo los datos relevantes del request
-        $data = $request->only(['name','is_activated']);
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
+        $unitBase = UnitBase::find($id);
 
-        $unit = $this->unitBaseService->updateUnitBase($id, $data);
-        // Devuelve la unidad actualizada como respuesta JSON o redirige a la lista
+        return view('unit-base.show', compact('unitBase'));
+    }
 
-        return  $this->index();
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id): View
+    {
+        $unitBase = UnitBase::find($id);
+
+        return view('unit-base.edit', compact('unitBase'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UnitBaseRequest $request, UnitBase $unitBase): RedirectResponse
+    {
+        $data =$request->all();
+        $data["is_activated"] =  $request->input('is_activated') === 'on' ? 1 : 0;
+        $unitBase->update($data);
+
+        return Redirect::route('unit-bases.index')
+            ->with('success', __('Unit Base').__('validation.attributes.successfully_updated'));
+    }
+
+    public function destroy($id): RedirectResponse
+    {
+        UnitBase::find($id)->delete();
+
+        return Redirect::route('unit-bases.index')
+            ->with('success', __('Unit Base').  __('validation.attributes.successfully_removed'));
     }
 }

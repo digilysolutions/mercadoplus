@@ -2,104 +2,87 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\LocationService;
+use App\Models\Location;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\LocationRequest;
+use App\Models\Municipality;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class LocationController extends Controller
 {
-
-    protected $locationService;
-
-    public function __construct(LocationService $locationService)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): View
     {
-        $this->locationService = $locationService;
-    }
-    public function index()
-    {
-        $locations = $this->locationService->getLocations();
-        $locations  = $locations["data"];
-        return view('admin.locations.index', compact('locations'));
+        $locations = Location::all();
+
+        return view('location.index', compact('locations'));
     }
 
-    public function store(Request $request)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
     {
-        /* The code snippet you provided is from a PHP Laravel controller `CategoryController`. Let's
-       break down the code: */
-        $data = $request->only(
-            [
-                'name',
-                'description',
-                'zip_code',
-                'city',
-                'address',
-                'municipality_id',
-                'landmark',
-                'is_activated',
-                'country_name',
-                'province_name',
-                'municipality_name'
-            ]
-        );
-        $data['city'] = "Isla de la Juventud";
-        $data['municipality_name'] = "Isla de la Juventud";
-        $data['province_name'] = 'Municipio Especial Isla de la Juventud';
-        $data['country_name'] = "Cuba";    
-      
-        $data['municipality_id'] = 1;
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
-      
-
-        $this->locationService->createLocations($data);
-        return $this->index();
+        $location = new Location();
+        $municipalities =  Municipality::allActivated();
+        return view('location.create', compact('location','municipalities'));
     }
 
-    public function show($id)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(LocationRequest $request): RedirectResponse
     {
-        // Obtiene la localidad por ID
-        $location = $this->locationService->showLocations($id);
-        // Devuelve la localidad como respuesta JSON
-        return response()->json($location);
-    }
-    public function delete($id)
-    {
-        // Obtiene la localidad por ID
-        $location = $this->locationService->deleteLocations($id);
-        // Devuelve localidad como respuesta JSON
-        return response()->json($location);
+         $data =$request->validated();
+        $data['is_is_activated'] = $request->input('is_is_activated') === 'on' ? 1 : 0;
+        Location::create($data);
+
+        return Redirect::route('locations.index')
+            ->with('success', __('Location').__('validation.attributes.successfully_created'));
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Display the specified resource.
+     */
+    public function show($id): View
     {
-        
-        $data = $request->only(
-            [
-                'name',
-                'description',
-                'zip_code',
-                'city',
-                'address',
-                'municipality_id',
-                'landmark',
-                'is_activated',
-                'country_name',
-                'province_name',
-                'municipality_name'
-            ]
-        );
-        $data['city'] = "Isla de la Juventud";
-        $data['municipality_name'] = "Isla de la Juventud";
-        $data['province_name'] = 'Municipio Especial Isla de la Juventud';
-        $data['country_name'] = "Cuba";
+        $location = Location::find($id);
 
-        $data['municipality_id'] = 1;
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
+        return view('location.show', compact('location'));
+    }
 
-        $this->locationService->updateLocations($id, $data);
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id): View
+    {
+        $location = Location::find($id);
+        $municipalities =  Municipality::allActivated();
+        return view('location.edit', compact('location','municipalities'));
+    }
 
-        // Devuelve localidad actualizada como respuesta JSON o redirige a la lista
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(LocationRequest $request, Location $location): RedirectResponse
+    {
+        $data =$request->all();
+        $data["is_activated"] =  $request->input('is_activated') === 'on' ? 1 : 0;
+        $location->update($data);
 
-        return  $this->index();
+        return Redirect::route('locations.index')
+            ->with('success', __('Location').__('validation.attributes.successfully_updated'));
+    }
+
+    public function destroy($id): RedirectResponse
+    {
+        Location::find($id)->delete();
+
+        return Redirect::route('locations.index')
+            ->with('success', __('Location').  __('validation.attributes.successfully_removed'));
     }
 }

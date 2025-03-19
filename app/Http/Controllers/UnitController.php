@@ -2,65 +2,87 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\UnitBaseService;
-use App\Services\UnitService;
+use App\Models\Unit;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use App\Http\Requests\UnitRequest;
+use App\Models\UnitBase;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class UnitController extends Controller
 {
-    protected $unitService;
-    protected $unitaBaseService;
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): View
+    {
+        $units = Unit::all();
 
-    public function __construct(UnitService $unitService,UnitBaseService $unitaBaseService)
-    {
-        $this->unitService = $unitService;
-        $this->unitaBaseService = $unitaBaseService;
-    }
-    public function index()
-    {
-        $data_units = $this->unitService->getUnits();
-        
-        $units  = $data_units["data"];
-        $data_units_base = $this->unitaBaseService->getUnitsBase();
-        $units_base  = $data_units_base["data"];
-        return view('admin.unit.index', compact('units','units_base'));
-    }
-    public function store(Request $request)
-    {
-        $data = $request->only(['name', 'shortname', 'unitbase_id', 'is_activated']);
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
-        $unit = $this->unitService->createUnit($data);
-        return $this->index();
+        return view('unit.index', compact('units'));
     }
 
-    public function show($id)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
     {
-        
-        // Obtiene la unidad por ID
-        $unit = $this->unitService->showUnit($id);
-        // Devuelve la unidad base como respuesta JSON
-        return response()->json($unit);
-    }
-    public function delete($id)
-    {        // Obtiene la unidad por ID
-        $unitBase = $this->unitService->deleteUnit($id);
-        // Devuelve la unidad como respuesta JSON
-        return response()->json($unitBase);
+        $unit = new Unit();
+        $unitsBase = UnitBase::allActivated();
+        return view('unit.create', compact('unit','unitsBase'));
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(UnitRequest $request): RedirectResponse
     {
-      
-        // Obtener solo los datos relevantes del request
-        $data = $request->only(['name', 'shortname', 'unitbase_id', 'is_activated']);
-       
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0; 
-        
-        $unit = $this->unitService->updateUnit($id, $data);
-        // Devuelve la unidad actualizada como respuesta JSON o redirige a la lista        
-        return  $this->index();
+         $data =$request->validated();
+        $data['is_is_activated'] = $request->input('is_is_activated') === 'on' ? 1 : 0;
+        Unit::create($data);
+
+        return Redirect::route('units.index')
+            ->with('success', __('Unit') .__('validation.attributes.successfully_created'));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show($id): View
+    {
+        $unit = Unit::find($id);
+
+        return view('unit.show', compact('unit'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id): View
+    {
+        $unit = Unit::find($id);
+        $unitsBase = UnitBase::allActivated();
+        return view('unit.edit', compact('unit','unitsBase'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UnitRequest $request, Unit $unit): RedirectResponse
+    {
+        $data =$request->all();
+        $data["is_activated"] =  $request->input('is_activated') === 'on' ? 1 : 0;
+        $unit->update($data);
+
+        return Redirect::route('units.index')
+            ->with('success', __('Unit') .__('validation.attributes.successfully_updated'));
+    }
+
+    public function destroy($id): RedirectResponse
+    {
+        Unit::find($id)->delete();
+
+        return Redirect::route('units.index')
+            ->with('success', __('Unit') .  __('validation.attributes.successfully_removed'));
     }
 }

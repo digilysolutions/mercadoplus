@@ -2,76 +2,91 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\CountryCurrencyService;
-use App\Services\CountryService;
-use App\Services\CurrencyService;
+use App\Models\CountryCurrency;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use App\Http\Requests\CountryCurrencyRequest;
+use App\Models\Currency;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class CountryCurrencyController extends Controller
 {
-    protected $countryCurrencyService;
-    protected $currencyService;
-    public function __construct(CountryCurrencyService $countryCurrencyService, CurrencyService $currencyService)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): View
     {
-        $this->countryCurrencyService = $countryCurrencyService;
-        $this->currencyService = $currencyService;
+        $countryCurrencies = CountryCurrency::all();
+
+        return view('country-currency.index', compact('countryCurrencies'));
     }
 
-    public function index()
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
     {
-        $countries_currencies = $this->countryCurrencyService->getCountryCurrency();
-        $countries_currencies  = $countries_currencies["data"];
-        $currencies = $this->currencyService->getCurrencies();
-        $currencies  = $currencies["data"];
+        $countryCurrency = new CountryCurrency();
+        $currencies = Currency::allActivated();
+        $defualt_currency = CountryCurrency::where('code_currency_default', 1)->first();
 
-       return view('admin.currency-country.index', compact('countries_currencies','currencies'));
+        return view('country-currency.create', compact('countryCurrency','currencies','defualt_currency'));
     }
 
-    public function store(Request $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(CountryCurrencyRequest $request): RedirectResponse
     {
-        $data = $request->only([
-            'country',
-            'currency_id',
-            'country_id',
-            'exchange_rate',
-            'code_currency_default',
-            'is_activated'
-        ]);
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
-        $data['code_currency_default'] = isset($data['code_currency_default']) && $data['code_currency_default'] == 'on' ? 1 : 0;
-        $this->countryCurrencyService->createCountryCurrency($data);
-        return $this->index();
+        $data = $request->validated();
+        $data['is_is_activated'] = $request->input('is_is_activated') === 'on' ? 1 : 0;
+        CountryCurrency::create($data);
+
+        return Redirect::route('country-currencies.index')
+            ->with('success', __('Currency') . __('validation.attributes.successfully_created'));
     }
 
-    public function show($id)
+    /**
+     * Display the specified resource.
+     */
+    public function show($id): View
     {
+        $countryCurrency = CountryCurrency::find($id);
 
-        $currency = $this->countryCurrencyService->showCountryCurrency($id);
-        // Devuelve la moneda como respuesta JSON
-        return response()->json($currency);
-    }
-    public function delete($id)
-    {
-        $currency = $this->countryCurrencyService->deleteCountryCurrency($id);
-        return response()->json($currency);
+        return view('country-currency.show', compact('countryCurrency'));
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id): View
     {
+        $countryCurrency = CountryCurrency::find($id);
+        $currencies = Currency::allActivated();
+        $defualt_currency = CountryCurrency::where('code_currency_default', 1)->first();
 
-        $data = $request->only([
-            'country',
-            'currency_id',
-            'country_id',
-            'exchange_rate',
-            'code_currency_default',
-            'is_activated'
-        ]);
+        return view('country-currency.edit', compact('countryCurrency','currencies','defualt_currency'));
+    }
 
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
-        $data['code_currency_default'] = isset($data['code_currency_default']) && $data['code_currency_default'] == 'on' ? 1 : 0;
-        $this->countryCurrencyService->updateCountryCurrency($id, $data);
-        return  $this->index();
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(CountryCurrencyRequest $request, CountryCurrency $countryCurrency): RedirectResponse
+    {
+        $data = $request->all();
+        $data["is_activated"] =  $request->input('is_activated') === 'on' ? 1 : 0;
+        $countryCurrency->update($data);
+
+        return Redirect::route('country-currencies.index')
+            ->with('success', __('Currency') . __('validation.attributes.successfully_updated'));
+    }
+
+    public function destroy($id): RedirectResponse
+    {
+        CountryCurrency::find($id)->delete();
+
+        return Redirect::route('country-currencies.index')
+            ->with('success', __('Currency') .  __('validation.attributes.successfully_removed'));
     }
 }

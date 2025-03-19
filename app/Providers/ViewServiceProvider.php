@@ -5,12 +5,22 @@ namespace App\Providers;
 use App\Http\Controllers\NavbarController;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
-
+use Illuminate\Support\Facades\DB;
 class ViewServiceProvider extends ServiceProvider
 {
-    public function boot()
+    /**
+     * Register services.
+     */
+    public function register(): void
     {
+        //
+    }
 
+    /**
+     * Bootstrap services.
+     */
+    public function boot(): void
+    {
         View::composer('layouts.partials-frontend.navbar', function ($view) {
             $categoryController = app(NavbarController::class);
             $menuCategories = $categoryController->getMenuItemsCategories();
@@ -27,12 +37,5 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('menuCategories', $menuCategories)
             ->with('specialOfferProduct', $specialOfferProduct);
         });
-    }
-    /**
-     * Register services.
-     */
-    public function register(): void
-    {
-        //
     }
 }

@@ -2,68 +2,124 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\TagService;
+use App\Models\Tag;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-
+use App\Http\Requests\TagRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 class TagController extends Controller
 {
-    protected $tagService;
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): View
+    {
+        $tags = Tag::all();
 
-    public function __construct(TagService $tagService)
-    {
-        $this->tagService = $tagService;
-    }
-    public function index()
-    {
-        $data = $this->tagService->getTags();
-        $tags = $data["data"];
-        return view('admin.tags.index', compact('tags'));
-    }
-    public function store(Request $request)
-    {            
-        $this->storeNewTag($request);
-        return $this->index();
-    }
-    function storeNewTag(Request $request)
-    {
-        $data =$request->only(['name', 'descriptions','is_activated']);
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
-        $tags=$this->tagService->createTag($data);
-        return  $tags;
+        return view('tag.index', compact('tags'));
     }
 
-    public function show($id)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
     {
-        // Obtiene la etiqueta por ID
-        $tag = $this->tagService->showTag($id);
-        // Devuelve la etiqueta como respuesta JSON
-        return response()->json($tag);
-    }
-    public function delete($id)
-    {        // Obtiene la ETQUETA por ID
-        $tag = $this->tagService->deleteTag($id);
-        // Devuelve la etiqueta como respuesta JSON
-        return response()->json($tag);
+        $tag = new Tag();
+
+        return view('tag.create', compact('tag'));
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(TagRequest $request): RedirectResponse
     {
-        // Obtener solo los datos relevantes del request
-        $data = $request->only(['name', 'descriptions', 'is_activated']);
-        // Convertir is_activated a un valor entero (1 o 0)
-        $data['is_activated'] = isset($data['is_activated']) && $data['is_activated'] == 'on' ? 1 : 0;
+         $data =$request->validated();
+        $data['is_is_activated'] = $request->input('is_is_activated') === 'on' ? 1 : 0;
+        Tag::create($data);
 
-        $tag = $this->tagService->updateTag($id, $data);
-        // Devuelve la etqiueta actualizada como respuesta JSON o redirige a la lista        
-        return  $this->index();
+        return Redirect::route('tags.index')
+            ->with('success', __('Tag').__('validation.attributes.successfully_created'));
     }
 
-    public function searchTags(Request $request)
-    {    
-        $tag = $this->tagService->searchTags($request);
-        return $tag;
+    public function addTags(Request $request)
+    {
+
+        DB::beginTransaction();
+
+        try {
+            // Verificar si 'name' es un arreglo
+            $names = is_array($request->name) ? $request->name : [$request->name];
+            $createdTags = []; // Array para almacenar las etiquetas creadas
+
+            // Recorrer los nombres y crear etiquetas
+            foreach ($names as $name) {
+                $details = [
+                    'name' => $name,
+                    'is_activated'=>true,
+                ];
+
+                // Crear la etiqueta y almacenarla
+                $tag = Tag::create($details);
+                $createdTags[] = $tag; // Almacenar la etiqueta creada
+            }
+
+            DB::commit();
+
+            // Retornar las etiquetas creadas como respuesta
+            return response()->json([
+                'data' => $createdTags,
+                'message' => 'Etiquetas creadas exitosamente.'
+            ], 201); // Código 201 para creación exitosa
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Error al guardar las etiquetas.',
+                'error' => $e->getMessage(),
+            ], 500); // Código 500 para error de servidor
+        }
     }
-    
+    /**
+     * Display the specified resource.
+     */
+    public function show($id): View
+    {
+        $tag = Tag::find($id);
+
+        return view('tag.show', compact('tag'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id): View
+    {
+        $tag = Tag::find($id);
+
+        return view('tag.edit', compact('tag'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(TagRequest $request, Tag $tag): RedirectResponse
+    {
+        $data =$request->all();
+        $data["is_activated"] =  $request->input('is_activated') === 'on' ? 1 : 0;
+        $tag->update($data);
+
+        return Redirect::route('tags.index')
+            ->with('success', __('Tag'). __('validation.attributes.successfully_updated'));
+    }
+
+    public function destroy($id): RedirectResponse
+    {
+        Tag::find($id)->delete();
+
+        return Redirect::route('tags.index')
+            ->with('success', __('Tag').  __('validation.attributes.successfully_removed'));
+    }
 }

@@ -1,33 +1,35 @@
 <div class="iq-sidebar  sidebar-default ">
     <div class="iq-sidebar-logo d-flex align-items-center justify-content-between">
-        <a href="backend/index.html" class="header-logo">
-            <img src="{{ $business_logo }}" class="img-fluid rounded-normal light-logo" alt="logo">
-            <h5 class="logo-title light-logo ml-3">{{ $business_name }}</h5>
+        <a href="/" class="header-logo">
+            <img src="{{ asset('img/logo-mplus.png') }}" class="img-fluid rounded-normal light-logo"
+                alt="logo">
+            <h5 class="logo-title light-logo ml-3"></h5>
+
         </a>
+
         <div class="iq-menu-bt-sidebar ml-0">
             <i class="las la-bars wrapper-menu"></i>
+
         </div>
     </div>
-
     <div class="data-scrollbar" data-scroll="1">
         <nav class="iq-sidebar-menu">
             <ul id="iq-sidebar-toggle" class="iq-menu">
-                <li class="" >
-                    <a href="backend/index.html" class="svg-icon">
-                        <svg class="svg-icon" id="p-dash1" width="20" height="20"
+                <li class="">
+                    <a href="{{ route('admin.dashboard') }}" class="svg-icon">
+                        <svg class="svg-icon" id="icon-desktop" width="20" height="20"
                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-                            </path>
-                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            <rect x="2" y="3" width="20" height="15" rx="2" ry="2"></rect>
+                            <line x1="8" y1="20" x2="16" y2="20"></line>
+                            <line x1="12" y1="20" x2="12" y2="23"></line>
                         </svg>
                         <span class="ml-4">Escritorio</span>
                     </a>
                 </li>
                 <li class="{{ request()->is('products*') ? 'active' : '' }}">
-                    <a href="#product" class="collapsed" data-toggle="collapse" aria-expanded="{{ request()->is('products*') ? 'true' : 'false' }}">
+                    <a href="#product" class="collapsed" data-toggle="collapse"
+                        aria-expanded="{{ request()->is('products*') ? 'true' : 'false' }}">
                         <svg class="svg-icon" id="p-dash14" width="20" height="20"
                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -51,23 +53,23 @@
                             </a>
                         </li>
                         <li class="{{ request()->is('admin/products/create') ? 'active' : '' }}">
-                            <a href="{{ route('product.create') }}">
+                            <a href="{{ route('products.create') }}">
                                 <i class="las la-minus"></i><span>Añadir nuevo</span>
                             </a>
                         </li>
-                        <li class="{{ request()->is('admin/categories*') ? 'active' : '' }}">
-                            <a href="{{ route('categories.index') }}" class="submenu-link">
+                        <li class="{{ request()->is('admin/product-categories*') ? 'active' : '' }}">
+                            <a href="{{ route('product-categories.index') }}" class="submenu-link">
                                 <i class="las la-minus"></i><span>Categorías</span>
                             </a>
 
                         </li>
-                        <li class="{{ request()->is('admin/tags*') ? 'active' : '' }}">                            
+                        <li class="{{ request()->is('admin/tags*') ? 'active' : '' }}">
                             <a href="{{ route('tags.index') }}" class="submenu-link">
                                 <i class="las la-minus"></i><span>Etiquetas</span>
                             </a>
                         </li>
-                        <li class="{{ request()->is('admin/attributes*') ? 'active' : '' }}">
-                            <a href="{{ route('attributes.index') }}">
+                        <li class="{{ request()->is('admin/attributes-models*') ? 'active' : '' }}">
+                            <a href="{{ route('attributes-models.index') }}">
                                 <i class="las la-minus"></i><span>Atributos</span>
                             </a>
                         </li>
@@ -76,31 +78,26 @@
                                 <i class="las la-minus"></i><span>Términos</span>
                             </a>
                         </li>
-                        <li class="">
-                            <a href="backend/page-add-product.html">
-                                <i class="las la-minus"></i><span>Variantes</span>
-                            </a>
-                        </li>
+
                         <li class="{{ request()->is('admin/brands*') ? 'active' : '' }}">
                             <a href="{{ route('brands.index') }}" class="submenu-link">
                                 <i class="las la-minus"></i><span>Marcas</span>
                             </a>
                         </li>
-                        <li class="{{ request()->is('admin/models*') ? 'active' : '' }}">
-                            <a href="{{ route('models.index') }}" class="submenu-link">
+                        <li class="{{ request()->is('admin/model-products*') ? 'active' : '' }}">
+                            <a href="{{ route('model-products.index') }}" class="submenu-link">
                                 <i class="las la-minus"></i><span>Modelos</span>
                             </a>
                         </li>
 
-                        @if( auth()->check() &&  auth()->user()->hasRole('admin'))  
+
                         <li class="{{ request()->is('admin/units*') ? 'active' : '' }}">
                             <a href="{{ route('units.index') }}" class="submenu-link">
                                 <i class="las la-minus"></i><span>Unidades</span>
                             </a>
                         </li>
-                        @endif
-                        <li class="{{ request()->is('admin/unitsbase*') ? 'active' : '' }}">
-                            <a href="{{ route('unitsbase.index') }}">
+                        <li class="{{ request()->is('admin/unit-bases*') ? 'active' : '' }}">
+                            <a href="{{ route('unit-bases.index') }}">
                                 <i class="las la-minus"></i><span>Unidades Base</span>
                             </a>
                         </li>
@@ -113,48 +110,31 @@
                     </ul>
                 </li>
                 <li class="{{ request()->is('admin/reviews*') ? 'active' : '' }}">
-                    <a href="{{ route('reviews.index') }}" >
+                    <a href="{{ route('reviews.index') }}">
                         <svg class="svg-icon iq-comment" width="20" height="20"
-                        xmlns="http://www.w3.org/2000/svg" viewBox="-5 0 30 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15c0 2-1 3-3 3H6l-4 4v-4H3c-2 0-3-1-3-3V6c0-2 1-3 3-3h15c2 0 3 1 3 3v9z"></path>
-                    </svg>
-                        <span class="ml-4">Comentarios</span>                        
-                    </a>                    
-                </li>
-             
-                <li class=" ">
-                    <a href="#purchase" class="collapsed" data-toggle="collapse" aria-expanded="false">
-                        <svg class="svg-icon" id="p-dash2" width="20" height="20"
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="-5 0 30 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="9" cy="21" r="1"></circle>
-                            <circle cx="20" cy="21" r="1"></circle>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            <path d="M21 15c0 2-1 3-3 3H6l-4 4v-4H3c-2 0-3-1-3-3V6c0-2 1-3 3-3h15c2 0 3 1 3 3v9z">
+                            </path>
                         </svg>
-                        <span class="ml-4">Ventas</span>
-                        <svg class="svg-icon iq-arrow-right arrow-active" width="20" height="20"
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="10 15 15 20 20 15"></polyline>
-                            <path d="M4 4h7a4 4 0 0 1 4 4v12"></path>
-                        </svg>
+                        <span class="ml-4">Comentarios</span>
                     </a>
-                    <ul id="purchase" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
-                        <li class="">
-                            <a href="backend/page-list-purchase.html">
-                                <i class="las la-minus"></i><span>List Purchases</span>
-                            </a>
-                        </li>
-                        <li class="">
-                            <a href="backend/page-add-purchase.html">
-                                <i class="las la-minus"></i><span>Add purchase</span>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
+                <li class="{{ request()->is('admin/orders*') ? 'active' : '' }}">
+                    <a href="#" class="collapsed" data-toggle="collapse" aria-expanded="false">
+                    <svg class="svg-icon" id="p-dash2" width="20" height="20"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span class="ml-4">Ventas</span>
+                    </a>
+                </li>
+
                 <li class=" ">
-                    <a href="#return" class="collapsed" data-toggle="collapse" aria-expanded="false">
+                    <a href="#ajuste" class="collapsed" data-toggle="collapse" aria-expanded="false">
 
                         <svg class="svg-icon" id="p-dash19" width="20" height="20"
                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -171,46 +151,43 @@
                             <path d="M4 4h7a4 4 0 0 1 4 4v12"></path>
                         </svg>
                     </a>
-                    <ul id="return" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
-                        <li class="">
-                            <a href="backend/page-list-returns.html">
-                                <i class="las la-minus"></i><span>Generales</span>
-                            </a>
-                        </li>
+                    <ul id="ajuste" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
+
                         <li class="{{ request()->is('admin/businesses*') ? 'active' : '' }}">
                             <a href="{{ route('businesses.index') }}">
                                 <i class="las la-minus"></i><span>Mi Negocio</span>
                             </a>
-                        </li>     
+                        </li>
                         <li class="{{ request()->is('admin/locations*') ? 'active' : '' }}">
                             <a href="{{ route('locations.index') }}">
                                 <i class="las la-minus"></i><span>Zonas</span>
                             </a>
-                        </li>                      
+                        </li>
                         <li class="{{ request()->is('admin/currencies*') ? 'active' : '' }}">
                             <a href="{{ route('currencies.index') }}">
 
                                 <i class="las la-minus"></i><span>Monedas</span>
                             </a>
                         </li>
-                        <li class="{{ request()->is('admin/countriescurrencies*') ? 'active' : '' }}">
-                            <a href="{{ route('countrycurrency.index') }}">
+                        <li class="{{ request()->is('admin/country-currencies*') ? 'active' : '' }}">
+                            <a href="{{ route('country-currencies.index') }}">
 
                                 <i class="las la-minus"></i><span>Tasa de Cambio</span>
                             </a>
-                        </li>                       
+                        </li>
 
                     </ul>
                 </li>
                 <li class=" ">
                     <a href="#return" class="collapsed" data-toggle="collapse" aria-expanded="false">
 
-                        <svg class="svg-icon" id="p-dash19" width="20" height="20"
+                        <svg class="svg-icon" id="p-dash6" width="20" height="20"
                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
-                            </path>
+                            <polyline points="4 14 10 14 10 20"></polyline>
+                            <polyline points="20 10 14 10 14 4"></polyline>
+                            <line x1="14" y1="10" x2="21" y2="3"></line>
+                            <line x1="3" y1="21" x2="10" y2="14"></line>
                         </svg>
                         <span class="ml-4">Mensajería</span>
                         <svg class="svg-icon iq-arrow-right arrow-active" width="20" height="20"
@@ -221,29 +198,17 @@
                         </svg>
                     </a>
                     <ul id="return" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
-                        <li class="{{ request()->is('admin/deliveryZones*') ? 'active' : '' }}">
-                            <a href="{{ route('deliveryZones.index') }}">
+                        <li class="{{ request()->is('admin/delivery-zones*') ? 'active' : '' }}">
+                            <a href="{{ route('delivery-zones.index') }}">
                                 <i class="las la-minus"></i><span>Zona</span>
                             </a>
                         </li>
-                                             
+
 
                     </ul>
                 </li>
-                <li class="{{ request()->is('admin/persons') ? 'active' : '' }}">
-                    <a href="{{ route('persons.index') }}" >
-                        <svg class="svg-icon" id="p-dash3" width="20" height="20"
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                        </svg>
-                        <span class="ml-4">Personas</span>                        
-                    </a>                    
-                </li>
-                
-                <li class=" ">
-                    <a href="#people" class="collapsed" data-toggle="collapse" aria-expanded="false">
+                <li class="{{ request()->is('admin/people') ? 'active' : '' }}">
+                    <a href="{{ route('people.index') }}">
                         <svg class="svg-icon" id="p-dash8" width="20" height="20"
                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -252,47 +217,11 @@
                             <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
                             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                         </svg>
-                        <span class="ml-4">Usuarios</span>
-                        <svg class="svg-icon iq-arrow-right arrow-active" width="20" height="20"
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="10 15 15 20 20 15"></polyline>
-                            <path d="M4 4h7a4 4 0 0 1 4 4v12"></path>
-                        </svg>
+                        <span class="ml-4">Personas</span>
                     </a>
-                    <ul id="people" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle">
-                        <li class="">
-                            <a href="backend/page-list-customers.html">
-                                <i class="las la-minus"></i><span>Customers</span>
-                            </a>
-                        </li>
-                        <li class="">
-                            <a href="backend/page-add-customers.html">
-                                <i class="las la-minus"></i><span>Add Customers</span>
-                            </a>
-                        </li>
-                        <li class="">
-                            <a href="backend/page-list-users.html">
-                                <i class="las la-minus"></i><span>Users</span>
-                            </a>
-                        </li>
-                        <li class="">
-                            <a href="backend/page-add-users.html">
-                                <i class="las la-minus"></i><span>Add Users</span>
-                            </a>
-                        </li>
-                        <li class="">
-                            <a href="backend/page-list-suppliers.html">
-                                <i class="las la-minus"></i><span>Suppliers</span>
-                            </a>
-                        </li>
-                        <li class="">
-                            <a href="backend/page-add-supplier.html">
-                                <i class="las la-minus"></i><span>Add Suppliers</span>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
+
+
                 <li class="">
                     <a href="backend/page-report.html" class="">
                         <svg class="svg-icon" id="p-dash7" width="20" height="20"
@@ -339,26 +268,21 @@
                     </ul>
                 </li>
                 <li class=" ">
-                    <a href="#otherpage" class="collapsed" data-toggle="collapse" aria-expanded="false">
-                        <svg class="svg-icon" id="p-dash6" width="20" height="20"
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="4 14 10 14 10 20"></polyline>
-                            <polyline points="20 10 14 10 14 4"></polyline>
-                            <line x1="14" y1="10" x2="21" y2="3"></line>
-                            <line x1="3" y1="21" x2="10" y2="14"></line>
-                        </svg>
-                        <span class="ml-4">Cerrar</span>
 
-                    </a>
+                        <form method="POST" action="/logout">
+                            @csrf
+                            <button class="btn btn-outline-link rounded-pill mt-2" type="submit"><i class="ri-lock-fill"></i>Cerrar
+                                Sesión</button>
+
+                        </form>
+
 
                 </li>
             </ul>
         </nav>
-        <div id="sidebar-bottom" class="position-relative sidebar-bottom">
-            
-        </div>
+
         <div class="p-3"></div>
     </div>
+
 
 </div>

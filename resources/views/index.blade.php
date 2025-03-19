@@ -55,6 +55,7 @@
     </style>
 @endsection
 @section('content')
+
     <!-- Carousel Start -->
     <div class="container-fluid mb-3">
         <div class="row px-xl-5">
@@ -133,7 +134,8 @@
             <div class="col">
                 <div class="owl-carousel vendor-carousel">
                     @foreach ($randomProducts as $product)
-                        <a href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">
+                        <a href="{{ route('product.detailsproduct', $product['id']) }}">
+
                             <div class="bg-light p-4">
                                 <img src="{{ $product['outstanding_image'] }}" alt="">
                             </div>
@@ -152,13 +154,13 @@
         <div class="row px-xl-5 pb-3">
 
 
-            @foreach ($menuCategories as $category)
+            @foreach ($categories as $category)
                 <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
                     <div class="product-item bg-light mb-4">
                         <div class="product-img position-relative overflow-hidden">
                             <a class="text-orange-mobile"
-                                href="{{ route('product.shop', ['category_ids[]' => $category['id']]) }}"><img
-                                    class="img-fluid w-100" src="{{ $category['path_image'] }}" alt="" /> </a>
+                                href="{{ route('product.shop', ['category_ids' => $category->id]) }}"><img
+                                    class="img-fluid w-100" src="{{ $category->path_image }}" alt="" /> </a>
                         </div>
                         <div class="text-center py-3"> </div>
 
@@ -182,26 +184,26 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
                     <div class="product-item bg-light mb-4">
                         <div class="product-image position-relative overflow-hidden">
-                            <a href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">
-                                <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}" alt="" />
+                            <a href="{{ route('product.detailsproduct', ['id' => $product->id]) }}">
+                                <img class="img-fluid w-100" src="{{ $product->outstanding_image }}" alt="" />
                             </a>
                         </div>
                         <div class="text-center py-4">
                             <a class="h4 text-decoration-none text-truncate"
-                                href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">{{ $product['name'] }}
+                                href="{{ route('product.detailsproduct', ['id' => $product->id]) }}">{{ $product->name }}
                             </a>
                             <div class="d-flex align-items-center justify-content-center mt-2">
-                                @if ($product['discounted_price'] != null && $product['discounted_price'] > 0)
-                                    <h2 class="product_{{ $product['id'] }}">${{ $product['discounted_price'] }}</h2>
-                                    <h2 id="" class="text-muted ml-2 product_{{ $product['id'] }}  sale-price"
-                                        data-product-id={{ $product['id'] }}><del>${{ $product['sale_price'] ?? 0 }}</del>
+                                @if ($product->discounted_price != null && $product->discounted_price > 0)
+                                    <h2 class="product_{{ $product->id }}">${{ $product->discounted_price }}</h2>
+                                    <h2 id="" class="text-muted ml-2 product_{{ $product->id }}  sale-price"
+                                        data-product-id={{ $product->id }}><del>${{ $product->sale_price ?? 0 }}</del>
                                     </h2>
                                 @else
-                                    <h2 class="product_{{ $product['id'] }}">${{ $product['sale_price'] ?? 0 }}</h2>
+                                    <h2 class="product_{{ $product->id }}">${{ $product->sale_price ?? 0 }}</h2>
                                 @endif
                             </div>
                             <div class="estrellas align-items-center justify-content-center " id="estrellas"
-                                data-calificacion="{{ $product['averageRating'] }}">
+                                data-calificacion="{{ $product->averageRating }}">
                                 <span class="estrella" data-valor="1">&#9734;</span>
                                 <span class="estrella" data-valor="2">&#9734;</span>
                                 <span class="estrella" data-valor="3">&#9734;</span>
@@ -215,23 +217,23 @@
                                             data-toggle="dropdown">
                                             <i class="fas fa-money-bill icon-header fa-2x"></i>
                                             <strong class="selectedCurrency h4"
-                                                data-product-id="{{ $product['id'] }}">{{ isset($product['categories']) && count($product['categories']) > 0 ? $product['categories'][0]['code_currency_default'] : '' }}</strong>
+                                                data-product-id="{{ $product->id }}">{{ isset($product->categories) && count($product->categories) > 0 ? $product->categories[0]->code_currency_default : '' }}</strong>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             @foreach ($countryCurrencies as $countryCurrency)
                                                 <button class="dropdown-item" type="button"
-                                                    onclick="changeCurrency('{{ $countryCurrency['currency']['code'] }}', {{ $product['id'] }})">
+                                                    onclick="changeCurrency('{{ $countryCurrency->currency->code }}', {{ $product->id }})">
                                                     <strong
-                                                        class="h4">{{ $countryCurrency['currency']['code'] }}</strong>
+                                                        class="h4">{{ $countryCurrency->currency->code }}</strong>
                                                 </button>
                                             @endforeach
                                         </div>
                                     </div>
                                     <button type="button" class="btn btn-outline-dark addcart"
-                                        data-id={{ $product['id'] }} data-toggle="tooltip" data-placement="bottom"
+                                        data-id={{ $product->id }} data-toggle="tooltip" data-placement="bottom"
                                         data-original-title="Añadir al Carrito"><i class="fa fa-shopping-cart fa-2x"></i>
                                     </button>
-                                    <a href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}"
+                                    <a href="{{ route('product.detailsproduct', ['id' => $product->id]) }}"
                                         id="more_details" class="btn btn-outline-dark ml-2" data-toggle="tooltip"
                                         data-placement="bottom" data-original-title="Ver Detalles"><i
                                             class="fa fa-info-circle fa-2x"></i></a>
@@ -287,29 +289,29 @@
                     <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
                         <div class="product-item bg-light mb-4">
                             <div class="product-image position-relative overflow-hidden">
-                                <a href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">
-                                    <img class="img-fluid w-100" src="{{ $product['outstanding_image'] }}"
+                                <a href="{{ route('product.detailsproduct', ['id' => $product->id]) }}">
+                                    <img class="img-fluid w-100" src="{{ $product->outstanding_image }}"
                                         alt="" />
                                 </a>
                             </div>
                             <div class="text-center py-4">
                                 <a class="h4 text-decoration-none text-truncate"
-                                    href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}">{{ $product['name'] }}
+                                    href="{{ route('product.detailsproduct', ['id' => $product->id]) }}">{{ $product->name }}
                                 </a>
                                 <div class=" d-flex align-items-center justify-content-center mt-2">
-                                    @if ($product['discounted_price'] != null && $product['discounted_price'] > 0)
-                                        <h2 class="product_{{ $product['id'] }}">${{ $product['discounted_price'] }}</h2>
+                                    @if ($product->discounted_price != null && $product->discounted_price > 0)
+                                        <h2 class="product_{{ $product->id }}">${{ $product->discounted_price }}</h2>
                                         <h2 id=""
-                                            class="text-muted ml-2 product_{{ $product['id'] }}  sale-price"
-                                            data-product-id={{ $product['id'] }}>
-                                            <del>${{ $product['sale_price'] ?? 0 }}</del>
+                                            class="text-muted ml-2 product_{{ $product->id }}  sale-price"
+                                            data-product-id={{ $product->id }}>
+                                            <del>${{ $product->sale_price ?? 0 }}</del>
                                         </h2>
                                     @else
-                                        <h2 class="product_{{ $product['id'] }}">${{ $product['sale_price'] ?? 0 }}</h2>
+                                        <h2 class="product_{{ $product->id }}">${{ $product->sale_price ?? 0 }}</h2>
                                     @endif
                                 </div>
                                 <div class="estrellas align-items-center justify-content-center " id="estrellas"
-                                    data-calificacion="{{ $product['averageRating'] }}">
+                                    data-calificacion="{{ $product->averageRating }}">
                                     <span class="estrella" data-valor="1">&#9734;</span>
                                     <span class="estrella" data-valor="2">&#9734;</span>
                                     <span class="estrella" data-valor="3">&#9734;</span>
@@ -323,24 +325,24 @@
                                                 data-toggle="dropdown">
                                                 <i class="fas fa-money-bill icon-header fa-2x"></i>
                                                 <strong class="selectedCurrency h4"
-                                                    data-product-id="{{ $product['id'] }}">{{ isset($product['categories']) && count($product['categories']) > 0 ? $product['categories'][0]['code_currency_default'] : '' }}</strong>
+                                                    data-product-id="{{ $product->id }}">{{ isset($product->categories) && count($product->categories) > 0 ? $product->categories[0]->code_currency_default : '' }}</strong>
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right">
                                                 @foreach ($countryCurrencies as $countryCurrency)
                                                     <button class="dropdown-item" type="button"
-                                                        onclick="changeCurrency('{{ $countryCurrency['currency']['code'] }}', {{ $product['id'] }})">
+                                                        onclick="changeCurrency('{{ $countryCurrency->currency->code }}', {{ $product->id }})">
                                                         <strong
-                                                            class="h4">{{ $countryCurrency['currency']['code'] }}</strong>
+                                                            class="h4">{{ $countryCurrency->currency->code }}</strong>
                                                     </button>
                                                 @endforeach
                                             </div>
                                         </div>
                                         <button type="button" class="btn btn-outline-dark addcart"
-                                            data-id={{ $product['id'] }} data-toggle="tooltip" data-placement="bottom"
+                                            data-id={{ $product->id }} data-toggle="tooltip" data-placement="bottom"
                                             data-original-title="Añadir al Carrito"><i
                                                 class="fa fa-shopping-cart fa-2x "></i>
                                         </button>
-                                        <a href="{{ route('product.detailsproduct', ['id' => $product['id']]) }}"
+                                        <a href="{{ route('product.detailsproduct', ['id' => $product->id]) }}"
                                             id="more_details" class="btn btn-outline-dark ml-2" data-toggle="tooltip"
                                             data-placement="bottom" data-original-title="Ver Detalles"><i
                                                 class="fa fa-info-circle fa-2x"></i></a>

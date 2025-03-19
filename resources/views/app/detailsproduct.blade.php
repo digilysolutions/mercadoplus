@@ -34,13 +34,13 @@
                         <div class="carousel-item active">
                             <img class="w-100 h-100" src="{{ $product['outstanding_image'] }}" alt="Image">
                         </div>
-                        @if (count($product['images']) > 0)
-                            @foreach ($product['images'] as $image)
-                                <div class="carousel-item">
-                                    <img class="w-100" src="{{ $image['path_image'] }}" alt="Image">
-                                </div>
-                            @endforeach
-                        @endif
+                        @if (isset($product->images) && is_array($product->images) && count($product->images) > 0)
+                        @foreach ($product->images as $image)
+                            <div class="carousel-item">
+                                <img class="w-100" src="{{ $image['path_image'] }}" alt="Image">
+                            </div>
+                        @endforeach
+                    @endif
                     </div>
                     <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
                         <i class="fa fa-2x fa-angle-left text-orange-mobile"></i>
@@ -261,7 +261,7 @@
                                     @endif
                                 </div>
                                 <div class="estrellas align-items-center justify-content-center " id="estrellas"
-                                    data-calificacion="{{ $product['averageRating'] }}">
+                                    data-calificacion="">
                                     <span class="estrella" data-valor="1">&#9734;</span>
                                     <span class="estrella" data-valor="2">&#9734;</span>
                                     <span class="estrella" data-valor="3">&#9734;</span>

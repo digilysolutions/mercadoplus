@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Services\CategoryService;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
@@ -9,19 +11,11 @@ use Illuminate\Support\Facades\Log;
 
 class NavbarController extends Controller
 {
-    protected $categoryService;
-    protected $productsService;
-    public function __construct(CategoryService $categoryService, ProductService $productsService)
-    {
-        $this->categoryService = $categoryService;
-        $this->productsService = $productsService;
-    }
+
 
     public function getMenuItemsCategories()
     {
-        $menuCategories = $this->categoryService->getMenuCategories();
-
-        $menuCategories  = $menuCategories["data"];
+        $menuCategories = ProductCategory::allActivated();
 
         // Convertir el array a una colección
         $categoriesCollection = collect($menuCategories); // Esto convierte el array a una colección
@@ -36,8 +30,7 @@ class NavbarController extends Controller
 
     function specialOffer()
     {
-        $products = $this->productsService->getProducts();
-        $products = $products['data'];
+        $products = Product::allActivated();
         $specialOfferProducts = collect($products);
 
         // Comprobar si hay al menos un producto con la condición
